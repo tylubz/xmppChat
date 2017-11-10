@@ -23,15 +23,16 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:26.1.0'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
 
-    // https://mvnrepository.com/artifact/org.igniterealtime.smack/smack-tcp
-    compile group: 'org.igniterealtime.smack', name: 'smack', version: '3.2.1'
-    compile group: 'org.igniterealtime.smack', name: 'smackx', version: '3.2.1'
+    //    TODO check if imports can be optimized
+    // https://mvnrepository.com/artifact/org.igniterealtime.smack/smack-core
+    compile group: 'org.igniterealtime.smack', name: 'smack-core', version: '4.2.0'
     // https://mvnrepository.com/artifact/org.igniterealtime.smack/smack-extensions
-    compile 'info.guardianproject.netcipher:netcipher:1.2'
-//    compile group: 'org.igniterealtime.smack', name: ' smack-sasl-provided', version: '4.1.0-alpha1'
+    compile group: 'org.igniterealtime.smack', name: 'smack-extensions', version: '4.2.0'
+    // https://mvnrepository.com/artifact/org.igniterealtime.smack/smack-tcp
+    compile group: 'org.igniterealtime.smack', name: 'smack-tcp', version: '4.2.0'
 
-//    compile group: 'org.igniterealtime.smack', name: 'smack-extensions', version: '4.0.0'
-
+    // https://mvnrepository.com/artifact/org.igniterealtime.smack/smack-android
+    compile group: 'org.igniterealtime.smack', name: 'smack-android', version: '4.2.0'
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
