@@ -8,6 +8,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+/**
+ * Loads all necessary properties for application
+ *
+ * @author Sergei Lebedev
+ */
 public final class ConfigLoader {
 
     private final Properties properties = new Properties();
@@ -16,7 +21,7 @@ public final class ConfigLoader {
     private ConfigLoader() {}
 
     private static class ConfigHolder {
-        public static final ConfigLoader INSTANCE = new ConfigLoader();
+        private static final ConfigLoader INSTANCE = new ConfigLoader();
         static {
             try {
                 InputStream inputStream = App.getContext().getAssets().open(FILE_NAME);
