@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        textView.append(editText.getText());
+        textView.append(editText.getText() + "\n");
         editable.clear();
     }
 }
