@@ -1,6 +1,8 @@
 package net.tylubz.chat.activities;
 
 import android.os.AsyncTask;
+import android.view.View;
+import android.widget.TextView;
 
 import net.tylubz.chat.configuration.Property;
 
@@ -8,7 +10,10 @@ import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.SASLAuthentication;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.chat2.Chat;
 import org.jivesoftware.smack.chat2.ChatManager;
+import org.jivesoftware.smack.chat2.IncomingChatMessageListener;
+import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.sasl.core.SCRAMSHA1Mechanism;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
@@ -27,6 +32,14 @@ import java.io.IOException;
 public class XmppServiceTask extends AsyncTask<Void, Void, Void> {
 
     private AbstractXMPPConnection connection;
+
+    private TextView view;
+
+    public XmppServiceTask() {}
+
+    public XmppServiceTask(TextView view) {
+        this.view = view;
+    }
 
     @Override
     protected void onPreExecute() {
@@ -85,6 +98,17 @@ public class XmppServiceTask extends AsyncTask<Void, Void, Void> {
 
         connection = new XMPPTCPConnection(config);
         connection.connect().login();
+
+//        TODO ugly!
+        final String jid = "golub578@jabber.ru";
+        EntityBareJid bareJid = JidCreate.entityBareFrom(jid);
+        ChatManager.getInstanceFor(connection)
+                .addIncomingListener(new IncomingChatMessageListener() {
+                    @Override
+                    public void newIncomingMessage(EntityBareJid from, Message message, Chat chat) {
+                        view.append(message.getBody());
+                    }
+                });
     }
 
     /**

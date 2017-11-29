@@ -39,14 +39,17 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        xmppService =  new XmppServiceTask();
-        xmppService.execute();
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         editText = findViewById(R.id.editText);
         sendButton = findViewById(R.id.sendButton);
         textView = findViewById(R.id.textView);
         textView.setMovementMethod(new ScrollingMovementMethod());
+        xmppService = new XmppServiceTask(textView);
+        xmppService.execute();
+
+//        textView.setLis
     }
 
     /**
