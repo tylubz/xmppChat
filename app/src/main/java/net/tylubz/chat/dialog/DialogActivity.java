@@ -1,5 +1,6 @@
-package net.tylubz.chat.activities;
+package net.tylubz.chat.dialog;
 
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -10,9 +11,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import net.tylubz.chat.R;
+import net.tylubz.chat.dialog.model.Message;
 
-import org.jivesoftware.smack.SmackException;
-import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.io.IOException;
 
@@ -21,20 +21,18 @@ import java.io.IOException;
  *
  * @author Sergei Lebedev
  */
-public class MainActivity extends AppCompatActivity {
+public class DialogActivity extends AppCompatActivity implements DialogContract.View {
 
-    //    xmpp service
-//    final ConfigLoader configLoader = ConfigLoader.getInstance();
-//    final Properties properties = configLoader.getProperties();
+    private static final String DELIMITER = "\n";
 
-    private XmppServiceTask xmppService;
+    private DialogContract.Presenter dialogPresenter;
 
     //    ui components
     private Button sendButton;
     private EditText editText;
     private TextView textView;
 
-    public MainActivity() throws IOException {
+    public DialogActivity() throws IOException {
     }
 
     @Override
@@ -46,30 +44,36 @@ public class MainActivity extends AppCompatActivity {
         sendButton = findViewById(R.id.sendButton);
         textView = findViewById(R.id.textView);
         textView.setMovementMethod(new ScrollingMovementMethod());
-        xmppService = new XmppServiceTask(textView);
-        xmppService.execute();
 
-//        textView.setLis
+        dialogPresenter = new DialogPresenter(this);
+    }
+
+    @Override
+    public void setPresenter(@NonNull DialogContract.Presenter presenter) {
+        dialogPresenter = presenter;
     }
 
     /**
-     * Send message and updates view information
+     * Sends message and updates view information
      *
      * @param view current view
      */
     public void onButtonClick(View view) {
+        onButtonClick();
+    }
+
+    @Override
+    public void onButtonClick() {
         Editable editable = editText.getText();
-        try {
-            xmppService.sendMessage(editable.toString());
-        } catch (XmppStringprepException e) {
-            e.printStackTrace();
-        } catch (SmackException.NotConnectedException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        textView.append(editText.getText() + "\n");
+//        TODO extend logic for catching errors
+        dialogPresenter.sendMessage(new Message(editable.toString()));
+        textView.append(editText.getText() + DELIMITER);
         editable.clear();
+    }
+
+    @Override
+    public void onMessageReceive(Message message) {
+        textView.append(message.getMessage() + DELIMITER);
     }
 }
 

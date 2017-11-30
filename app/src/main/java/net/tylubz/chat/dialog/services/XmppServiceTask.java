@@ -1,10 +1,11 @@
-package net.tylubz.chat.activities;
+package net.tylubz.chat.dialog.services;
 
 import android.os.AsyncTask;
 import android.view.View;
 import android.widget.TextView;
 
 import net.tylubz.chat.configuration.Property;
+import net.tylubz.chat.dialog.MessageListener;
 
 import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.SASLAuthentication;
@@ -33,12 +34,14 @@ public class XmppServiceTask extends AsyncTask<Void, Void, Void> {
 
     private AbstractXMPPConnection connection;
 
-    private TextView view;
+    private MessageListener messageListener;
+
+//    private TextView view;
 
     public XmppServiceTask() {}
 
-    public XmppServiceTask(TextView view) {
-        this.view = view;
+    public XmppServiceTask(MessageListener messageListener) {
+        this.messageListener = messageListener;
     }
 
     @Override
@@ -99,17 +102,38 @@ public class XmppServiceTask extends AsyncTask<Void, Void, Void> {
         connection = new XMPPTCPConnection(config);
         connection.connect().login();
 
-//        TODO ugly!
-        final String jid = "golub578@jabber.ru";
-        EntityBareJid bareJid = JidCreate.entityBareFrom(jid);
+
         ChatManager.getInstanceFor(connection)
                 .addIncomingListener(new IncomingChatMessageListener() {
                     @Override
                     public void newIncomingMessage(EntityBareJid from, Message message, Chat chat) {
-                        view.append(message.getBody());
+                        messageListener.push(new net.tylubz.chat.dialog.model.Message(message.getBody()));
                     }
                 });
+
+////        TODO ugly!
+//        final String jid = "golub578@jabber.ru";
+//        EntityBareJid bareJid = JidCreate.entityBareFrom(jid);
+//        ChatManager.getInstanceFor(connection)
+//                .addIncomingListener(new IncomingChatMessageListener() {
+//                    @Override
+//                    public void newIncomingMessage(EntityBareJid from, Message message, Chat chat) {
+//                        view.append(message.getBody());
+//                        presenter.sendMessage();
+//                    }
+//                });
     }
+
+//    public void addMessageListener(final MessageListener listener){
+//        ChatManager.getInstanceFor(connection)
+//                .addIncomingListener(new IncomingChatMessageListener() {
+//                    @Override
+//                    public void newIncomingMessage(EntityBareJid from, Message message, Chat chat) {
+//                        listener.push(new net.tylubz.chat.dialog.model.Message(message.getBody()));
+//                    }
+//                });
+//
+//    }
 
     /**
      * Sends a message to specified user
@@ -131,11 +155,27 @@ public class XmppServiceTask extends AsyncTask<Void, Void, Void> {
     }
 
     //    TODO remove after testing
-    public void sendMessage(String message) throws XmppStringprepException, SmackException.NotConnectedException, InterruptedException {
+    public void sendMessage(String message)  {
         final String jid = "golub578@jabber.ru";
-        EntityBareJid bareJid = JidCreate.entityBareFrom(jid);
-        ChatManager.getInstanceFor(connection)
-                .chatWith(bareJid)
-                .send(message);
+        try {
+            EntityBareJid bareJid = JidCreate.entityBareFrom(jid);
+            ChatManager.getInstanceFor(connection)
+                    .chatWith(bareJid)
+                    .send(message);
+        } catch (SmackException.NotConnectedException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (XmppStringprepException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public AbstractXMPPConnection getConnection() {
+        return connection;
+    }
+
+    public void setConnection(AbstractXMPPConnection connection) {
+        this.connection = connection;
     }
 }
