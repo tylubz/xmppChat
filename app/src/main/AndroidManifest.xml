@@ -12,7 +12,8 @@
         android:supportsRtl="true"
         android:screenOrientation="portrait"
         android:theme="@style/AppTheme">
-        <activity android:name=".dialog.DialogActivity">
+        <!--<activity android:name=".dialog.DialogActivity">-->
+        <activity android:name=".contact_list.ContactListActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
