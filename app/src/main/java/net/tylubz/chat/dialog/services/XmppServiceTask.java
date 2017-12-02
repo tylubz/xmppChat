@@ -178,4 +178,6 @@ public class XmppServiceTask extends AsyncTask<Void, Void, Void> {
     public void setConnection(AbstractXMPPConnection connection) {
         this.connection = connection;
     }
+
+    public void closeConnection() {connection.disconnect();}
 }

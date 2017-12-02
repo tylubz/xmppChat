@@ -75,6 +75,18 @@ public class DialogActivity extends AppCompatActivity implements DialogContract.
     public void onMessageReceive(Message message) {
         textView.append(message.getMessage() + DELIMITER);
     }
+
+    @Override
+    protected void onStop() {
+        dialogPresenter.stop();
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        dialogPresenter.stop();
+        super.onDestroy();
+    }
 }
 
 

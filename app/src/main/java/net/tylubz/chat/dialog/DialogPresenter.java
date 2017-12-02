@@ -30,6 +30,11 @@ public class DialogPresenter implements DialogContract.Presenter {
     }
 
     @Override
+    public void stop() {
+        xmppServiceTask.closeConnection();
+    }
+
+    @Override
     public void sendMessage(Message message) {
         xmppServiceTask.sendMessage(message.getMessage());
     }
