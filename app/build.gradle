@@ -9,6 +9,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
         release {
@@ -28,6 +29,7 @@ dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     //    TODO check if imports can be optimized
     // https://mvnrepository.com/artifact/org.igniterealtime.smack/smack-core
+    implementation 'com.android.support:support-vector-drawable:26.1.0'
     compile 'org.igniterealtime.smack:smack-core:4.2.0'
     // https://mvnrepository.com/artifact/org.igniterealtime.smack/smack-extensions
     compile 'org.igniterealtime.smack:smack-extensions:4.2.0'

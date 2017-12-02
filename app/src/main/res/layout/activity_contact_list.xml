@@ -9,7 +9,40 @@
     <ListView
         android:id="@+id/countriesList"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-    </ListView>
+        android:layout_height="443dp"
+        android:choiceMode="multipleChoice"
+        app:layout_constraintBottom_toTopOf="@+id/createChatButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/createChatButton"
+        android:onClick="onCreateButtonClick"
+        android:layout_width="123dp"
+        android:layout_height="wrap_content"
+        android:text="Create"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/cancelChatButton"
+        app:layout_constraintHorizontal_bias="0.152"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/countriesList"
+        app:layout_constraintVertical_bias="0.45" />
+
+    <Button
+        android:id="@+id/cancelChatButton"
+        android:onClick="onCancelButtonClick"
+        android:layout_width="116dp"
+        android:layout_height="wrap_content"
+        android:text="Cancel"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/createChatButton"
+        app:layout_constraintTop_toBottomOf="@+id/countriesList"
+        app:layout_constraintVertical_bias="0.45" />
 
 </android.support.constraint.ConstraintLayout>
