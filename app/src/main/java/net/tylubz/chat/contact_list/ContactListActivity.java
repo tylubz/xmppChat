@@ -1,8 +1,10 @@
 package net.tylubz.chat.contact_list;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -14,11 +16,14 @@ import android.widget.ListView;
 
 import net.tylubz.chat.R;
 import net.tylubz.chat.dialog.dummy.DummyContent;
+import net.tylubz.chat.multidialog.MultiDialogActivity;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ContactListActivity extends AppCompatActivity {
+
+    public static final String ITEM_LIST = "itemList";
 
     private String[] countries = { "Бразилия", "Аргентина", "Колумбия", "Чили", "Уругвай"};
     private List<DummyContent> list = new ArrayList<>();
@@ -83,6 +88,20 @@ public class ContactListActivity extends AppCompatActivity {
 
     public void onCreateButtonClick(View view) {
         Log.i("info", "Create button has been pressed");
+        SparseBooleanArray sparseArray = countriesList.getCheckedItemPositions();
+        ArrayList<String> countryList = new ArrayList<>();
+        for(int i=0; i < countries.length;i++)
+        {
+            if(sparseArray.get(i)) {
+                Log.i("info", "Item " + countries[i] + " has been selected");
+                countryList.add(countries[i]);
+            }
+
+        }
+        Log.i("info", "Create button has been pressed");
+        Intent intent = new Intent(this, MultiDialogActivity.class);
+        intent.putExtra(ITEM_LIST, countryList);
+        startActivity(intent);
     }
 
 }
