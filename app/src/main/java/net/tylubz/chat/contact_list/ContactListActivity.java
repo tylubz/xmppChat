@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import net.tylubz.chat.R;
+import net.tylubz.chat.dialog.DialogActivity;
 import net.tylubz.chat.dialog.dummy.DummyContent;
 import net.tylubz.chat.multidialog.MultiDialogActivity;
 
@@ -54,6 +55,8 @@ public class ContactListActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 //                TODO extend
                 String selectedItem = countries[i];
+                Intent intent = new Intent(view.getContext(), DialogActivity.class);
+                startActivity(intent);
             }
         });
 

@@ -1,13 +1,13 @@
 package net.tylubz.chat.dialog.services;
 
 import android.os.AsyncTask;
-import android.view.View;
-import android.widget.TextView;
+import android.util.Log;
 
 import net.tylubz.chat.configuration.Property;
 import net.tylubz.chat.dialog.MessageListener;
 
 import org.jivesoftware.smack.AbstractXMPPConnection;
+import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.SASLAuthentication;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
@@ -18,11 +18,23 @@ import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.sasl.core.SCRAMSHA1Mechanism;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
+import org.jivesoftware.smackx.filetransfer.FileTransferManager;
+import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
+import org.jivesoftware.smackx.filetransfer.Socks5TransferNegotiator;
+import org.jxmpp.jid.BareJid;
 import org.jxmpp.jid.EntityBareJid;
+import org.jxmpp.jid.EntityFullJid;
+import org.jxmpp.jid.FullJid;
 import org.jxmpp.jid.impl.JidCreate;
+import org.jxmpp.jid.parts.Resourcepart;
 import org.jxmpp.stringprep.XmppStringprepException;
 
+import java.io.File;
 import java.io.IOException;
+import java.security.KeyStore;
+import java.security.NoSuchAlgorithmException;
+
+import javax.net.ssl.KeyManagerFactory;
 
 /**
  * Represents a service for interaction
@@ -84,7 +96,12 @@ public class XmppServiceTask extends AsyncTask<Void, Void, Void> {
         final String hostName = "jabber.ru";
         final String xmppDomainName = "jabber.ru";
         final int portNumber = 5222;
-
+//        String algorithm = null;
+//        try {
+//            String algorithm = KeyManagerFactory.getInstance("SunX509").getAlgorithm();
+//        } catch (NoSuchAlgorithmException e) {
+//            e.printStackTrace();
+//        }
         XMPPTCPConnectionConfiguration config = XMPPTCPConnectionConfiguration.builder()
                 .setUsernameAndPassword(Property.USER_NAME, Property.PASSWORD)
                 .setHost(hostName)
@@ -92,7 +109,7 @@ public class XmppServiceTask extends AsyncTask<Void, Void, Void> {
                 .setPort(portNumber)
 //                    TODO adjust to secure way
                 .setKeystoreType(null)
-//                    .setSecurityMode(ConnectionConfiguration.SecurityMode.disabled) // Do not disable TLS except for test purposes!
+//                    .setSecurityMode(ConnectionConfiguration.SecurityMode.required) // Do not disable TLS except for test purposes!
                 .setDebuggerEnabled(true)
                 .build();
 
@@ -167,6 +184,31 @@ public class XmppServiceTask extends AsyncTask<Void, Void, Void> {
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (XmppStringprepException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void sendFile(File file) {
+        if (!file.exists()) {
+            Log.e("EROR", "file doesn't exist");
+        }
+        final String jid = "golub578@jabber.ru";
+        EntityFullJid entityFullJid = null;
+        try {
+            BareJid bareJid = JidCreate.bareFrom(jid);
+            entityFullJid = JidCreate.fullFrom(bareJid.asEntityBareJidIfPossible(), Resourcepart.EMPTY);
+        } catch (XmppStringprepException e) {
+            e.printStackTrace();
+        }
+
+        // Create the file transfer manager
+        FileTransferManager manager = FileTransferManager.getInstanceFor(connection);
+        // Create the outgoing file transfer
+        OutgoingFileTransfer transfer = manager.createOutgoingFileTransfer(entityFullJid);
+        // Send the file
+        try {
+            transfer.sendFile(file, "You won't believe this!");
+        } catch (SmackException e) {
             e.printStackTrace();
         }
     }

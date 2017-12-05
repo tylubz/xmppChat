@@ -1,5 +1,7 @@
 package net.tylubz.chat.dialog;
 
+import android.content.Context;
+import android.content.res.AssetManager;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,7 +16,10 @@ import net.tylubz.chat.R;
 import net.tylubz.chat.dialog.model.Message;
 
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.Charset;
 
 /**
  * Represents main activity
@@ -60,6 +65,44 @@ public class DialogActivity extends AppCompatActivity implements DialogContract.
      */
     public void onButtonClick(View view) {
         onButtonClick();
+    }
+
+
+    public static File sendFile(Context context) throws IOException {
+        File cacheFile = new File(context.getCacheDir(), "file.txt");
+        try {
+//            File file = context.getFileStreamPath("raw/file.txt");
+//            InputStream inputStream = context.getAssets().open("raw/file.txt");
+            try {
+                FileOutputStream outputStream = new FileOutputStream(cacheFile);
+                try {
+//                    byte[] buf = new byte[1024];
+                    byte[] buf =  "TestText 123".getBytes(Charset.forName("UTF-8"));
+//                    String.
+                    int len;
+//                    while ((len = inputStream.read(buf)) > 0) {
+                        outputStream.write(buf, 0, buf.length);
+//                    }
+                } finally {
+                    outputStream.close();
+                }
+            } finally {
+//                inputStream.close();
+            }
+        } catch (IOException e) {
+            throw new IOException("Could not open robot png", e);
+        }
+        return cacheFile;
+    }
+
+    public void onFileButtonClick(View view) {
+        try {
+            File file = sendFile(view.getContext());
+            dialogPresenter.sendFile(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Override

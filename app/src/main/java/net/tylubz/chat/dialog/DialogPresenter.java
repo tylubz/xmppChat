@@ -3,6 +3,8 @@ package net.tylubz.chat.dialog;
 import net.tylubz.chat.dialog.model.Message;
 import net.tylubz.chat.dialog.services.XmppServiceTask;
 
+import java.io.File;
+
 /**
  * Implementation of dialog presenter interface
  *
@@ -37,5 +39,10 @@ public class DialogPresenter implements DialogContract.Presenter {
     @Override
     public void sendMessage(Message message) {
         xmppServiceTask.sendMessage(message.getMessage());
+    }
+
+    @Override
+    public void sendFile(File file) {
+        xmppServiceTask.sendFile(file);
     }
 }
