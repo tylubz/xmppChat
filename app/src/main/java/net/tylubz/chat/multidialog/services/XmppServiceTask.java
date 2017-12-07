@@ -4,23 +4,40 @@ import android.os.AsyncTask;
 
 import net.tylubz.chat.configuration.Property;
 import net.tylubz.chat.multidialog.MessageListener;
+import net.tylubz.chat.multidialog.ResultListener;
+import net.tylubz.chat.multidialog.model.Contact;
 
 import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.SASLAuthentication;
 import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.chat2.Chat;
 import org.jivesoftware.smack.chat2.ChatManager;
 import org.jivesoftware.smack.chat2.IncomingChatMessageListener;
 import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.roster.Roster;
+import org.jivesoftware.smack.roster.RosterEntry;
 import org.jivesoftware.smack.sasl.core.SCRAMSHA1Mechanism;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
+import org.jivesoftware.smackx.muc.MultiUserChat;
+import org.jivesoftware.smackx.muc.MultiUserChatException;
+import org.jivesoftware.smackx.muc.MultiUserChatManager;
 import org.jxmpp.jid.EntityBareJid;
+import org.jxmpp.jid.FullJid;
+import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.impl.JidCreate;
+import org.jxmpp.jid.parts.Resourcepart;
+import org.jxmpp.jid.util.JidUtil;
 import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Represents a service for interaction
@@ -28,18 +45,21 @@ import java.io.IOException;
  *
  * @author Sergei Lebedev
  */
-public class XmppServiceTask extends AsyncTask<Void, Void, Void> {
+public class XmppServiceTask extends AsyncTask<Void, Void, List<Contact>> {
 
     private AbstractXMPPConnection connection;
 
     private MessageListener messageListener;
 
+    private ResultListener resultListener;
+
 //    private TextView view;
 
     public XmppServiceTask() {}
 
-    public XmppServiceTask(MessageListener messageListener) {
+    public XmppServiceTask(MessageListener messageListener, ResultListener resultListener) {
         this.messageListener = messageListener;
+        this.resultListener = resultListener;
     }
 
     @Override
@@ -48,7 +68,7 @@ public class XmppServiceTask extends AsyncTask<Void, Void, Void> {
     }
 
     @Override
-    protected Void doInBackground(Void... params) {
+    protected List<Contact> doInBackground(Void... params) {
 //        TODO extend exception processing
         try {
             establishConnection();
@@ -61,13 +81,20 @@ public class XmppServiceTask extends AsyncTask<Void, Void, Void> {
         } catch (SmackException e) {
             e.printStackTrace();
         }
-        return null;
+        return getContactList();
     }
 
     @Override
-    protected void onPostExecute(Void result) {
+    protected void onPostExecute(List<Contact> result) {
 //        TODO close connection
         super.onPostExecute(result);
+        resultListener.pushResult(result);
+    }
+
+    @Override
+    protected void onProgressUpdate(Void... values) {
+        super.onProgressUpdate(values);
+        publishProgress();
     }
 
     /**
@@ -145,6 +172,68 @@ public class XmppServiceTask extends AsyncTask<Void, Void, Void> {
             e.printStackTrace();
         }
     }
+
+    public List<Contact> getContactList() {
+        Roster roster = Roster.getInstanceFor(connection);
+        if (!roster.isLoaded())
+            try {
+                roster.reloadAndWait();
+            } catch (SmackException.NotLoggedInException e) {
+                e.printStackTrace();
+            } catch (SmackException.NotConnectedException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        Collection<RosterEntry> entries = roster.getEntries();
+        return toContactList(entries, roster);
+    }
+
+    public void createGroupChat(List<Contact> contactList) {
+        // Create the XMPP address (JID) of the MUC.
+
+        List<Contact> cList = getContactList();
+        // Create the nickname.
+        Resourcepart nickname = null;
+        try {
+            nickname = Resourcepart.from("testr345");
+        } catch (XmppStringprepException e) {
+            e.printStackTrace();
+        }
+
+        MultiUserChatManager manager = MultiUserChatManager.getInstanceFor(connection);
+        final String jid = "mytestroom@conference.jabber.ru";
+
+        EntityBareJid bareJid = null;
+        try {
+            bareJid = JidCreate.entityBareFrom(jid);
+        } catch (XmppStringprepException e) {
+            e.printStackTrace();
+        }
+
+        // Create a MultiUserChat using an XMPPConnection for a room
+        MultiUserChat muc = manager.getMultiUserChat(bareJid);
+
+        try {
+            muc.create(nickname).makeInstant();
+            muc.join(nickname);
+            muc.invite(JidCreate.entityBareFrom("golub578@jabber.ru"), "Please join to chat" + nickname);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private List<Contact> toContactList(Collection<RosterEntry> entries, Roster roster) {
+        List<Contact> contactList = new ArrayList<>();
+        for (RosterEntry entry: entries) {
+            Presence presence = roster.getPresence(entry.getJid());
+            String userName = entry.getJid().getLocalpartOrNull() + "@" + entry.getJid().getDomain();
+            contactList.add(new Contact(userName, presence.getMode().toString()));
+        }
+        return contactList;
+    }
+
 
     public AbstractXMPPConnection getConnection() {
         return connection;

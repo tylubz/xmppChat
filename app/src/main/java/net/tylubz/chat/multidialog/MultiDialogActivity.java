@@ -1,5 +1,6 @@
 package net.tylubz.chat.multidialog;
 
+import android.os.StrictMode;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 
 import net.tylubz.chat.R;
 import net.tylubz.chat.contact_list.ContactListActivity;
+import net.tylubz.chat.multidialog.model.Contact;
 import net.tylubz.chat.multidialog.model.Message;
 
 import java.util.ArrayList;
@@ -45,7 +47,13 @@ public class MultiDialogActivity extends AppCompatActivity implements MultiDialo
                 textView.append(list.get(i) + DELIMITER);
             }
         }
-
+//        TODO REMOVE after moving to RXJava
+        int SDK_INT = android.os.Build.VERSION.SDK_INT;
+        if (SDK_INT > 8) {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                    .permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+        }
         dialogPresenter = new MultiDialogPresenter(this);
     }
 
@@ -67,14 +75,20 @@ public class MultiDialogActivity extends AppCompatActivity implements MultiDialo
     public void onButtonClick() {
         Editable editable = editText.getText();
 //        TODO extend logic for catching errors
-        dialogPresenter.sendMessage(new Message(editable.toString()));
-        textView.append(editText.getText() + DELIMITER);
-        editable.clear();
+          dialogPresenter.createGroupChat();
+//        dialogPresenter.sendMessage(new Message(editable.toString()));
+//        textView.append(editText.getText() + DELIMITER);
+//        editable.clear();
     }
 
     @Override
     public void onMessageReceive(Message message) {
         textView.append(message.getMessage() + DELIMITER);
+    }
+
+    @Override
+    public void onContactListReceive(List<Contact> contactList) {
+
     }
 
     @Override

@@ -1,7 +1,10 @@
 package net.tylubz.chat.multidialog;
 
+import net.tylubz.chat.multidialog.model.Contact;
 import net.tylubz.chat.multidialog.model.Message;
 import net.tylubz.chat.multidialog.services.XmppServiceTask;
+
+import java.util.List;
 
 /**
  * Implementation of dialog presenter interface
@@ -17,7 +20,8 @@ public class MultiDialogPresenter implements MultiDialogContract.Presenter {
 
     public MultiDialogPresenter(final MultiDialogContract.View dialogView) {
 
-        xmppServiceTask = new XmppServiceTask(msg -> dialogView.onMessageReceive(msg));
+        xmppServiceTask = new XmppServiceTask(msg -> dialogView.onMessageReceive(msg),
+                result -> dialogView.onContactListReceive(result));
         xmppServiceTask.execute();
 
         this.dialogView = dialogView;
@@ -37,5 +41,10 @@ public class MultiDialogPresenter implements MultiDialogContract.Presenter {
     @Override
     public void sendMessage(Message message) {
         xmppServiceTask.sendMessage(message.getMessage());
+    }
+
+    @Override
+    public void createGroupChat() {
+        xmppServiceTask.createGroupChat(null);
     }
 }
