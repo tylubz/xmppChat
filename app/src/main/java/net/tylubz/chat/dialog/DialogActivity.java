@@ -1,7 +1,6 @@
 package net.tylubz.chat.dialog;
 
 import android.content.Context;
-import android.content.res.AssetManager;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,6 +12,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import net.tylubz.chat.R;
+import net.tylubz.chat.contact_list.ContactListActivity;
 import net.tylubz.chat.dialog.model.Message;
 
 
@@ -35,7 +35,10 @@ public class DialogActivity extends AppCompatActivity implements DialogContract.
     //    ui components
     private Button sendButton;
     private EditText editText;
+    private EditText editTypeText;
     private TextView textView;
+
+    private String jid;
 
     public DialogActivity() throws IOException {
     }
@@ -45,11 +48,17 @@ public class DialogActivity extends AppCompatActivity implements DialogContract.
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        editTypeText = findViewById(R.id.editTypeText);
         editText = findViewById(R.id.editText);
         sendButton = findViewById(R.id.sendButton);
         textView = findViewById(R.id.textView);
         textView.setMovementMethod(new ScrollingMovementMethod());
 
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            jid = (String) extras.get(ContactListActivity.USER_NAME);
+            editText.setText("Dialog with " + jid);
+        }
         dialogPresenter = new DialogPresenter(this);
     }
 
@@ -107,10 +116,10 @@ public class DialogActivity extends AppCompatActivity implements DialogContract.
 
     @Override
     public void onButtonClick() {
-        Editable editable = editText.getText();
+        Editable editable = editTypeText.getText();
 //        TODO extend logic for catching errors
-        dialogPresenter.sendMessage(new Message(editable.toString()));
-        textView.append(editText.getText() + DELIMITER);
+        dialogPresenter.sendMessage(jid, new Message(editable.toString()));
+        textView.append(editTypeText.getText() + DELIMITER);
         editable.clear();
     }
 

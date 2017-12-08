@@ -70,17 +70,7 @@ public class XmppServiceTask extends AsyncTask<Void, Void, List<Contact>> {
     @Override
     protected List<Contact> doInBackground(Void... params) {
 //        TODO extend exception processing
-        try {
             establishConnection();
-        } catch (XMPPException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (SmackException e) {
-            e.printStackTrace();
-        }
         return getContactList();
     }
 
@@ -105,27 +95,32 @@ public class XmppServiceTask extends AsyncTask<Void, Void, List<Contact>> {
      * @throws InterruptedException if problem occurs with processing connection
      * @throws SmackException if problem occurs with processing connection
      */
-    private void establishConnection() throws XMPPException, IOException, InterruptedException, SmackException {
+    public void establishConnection()  {
         final String hostName = "jabber.ru";
         final String xmppDomainName = "jabber.ru";
         final int portNumber = 5222;
 
-        XMPPTCPConnectionConfiguration config = XMPPTCPConnectionConfiguration.builder()
-                .setUsernameAndPassword(Property.USER_NAME, Property.PASSWORD)
-                .setHost(hostName)
-                .setXmppDomain(JidCreate.domainBareFrom(xmppDomainName))
-                .setPort(portNumber)
+        try {
+            XMPPTCPConnectionConfiguration config = XMPPTCPConnectionConfiguration.builder()
+                    .setUsernameAndPassword(Property.USER_NAME, Property.PASSWORD)
+                    .setHost(hostName)
+                    .setXmppDomain(JidCreate.domainBareFrom(xmppDomainName))
+                    .setPort(portNumber)
 //                    TODO adjust to secure way
-                .setKeystoreType(null)
+                    .setKeystoreType(null)
 //                    .setSecurityMode(ConnectionConfiguration.SecurityMode.disabled) // Do not disable TLS except for test purposes!
-                .setDebuggerEnabled(true)
-                .build();
+                    .setDebuggerEnabled(true)
+                    .build();
 
 //        add SCRAM-SHA-1 mechanism for interaction
-        SASLAuthentication.registerSASLMechanism(new SCRAMSHA1Mechanism());
+            SASLAuthentication.registerSASLMechanism(new SCRAMSHA1Mechanism());
 
-        connection = new XMPPTCPConnection(config);
-        connection.connect().login();
+            connection = new XMPPTCPConnection(config);
+            connection.connect().login();
+        }catch (Exception e) {
+            e.printStackTrace();
+            //Do nothing
+        }
 
 
         ChatManager.getInstanceFor(connection)

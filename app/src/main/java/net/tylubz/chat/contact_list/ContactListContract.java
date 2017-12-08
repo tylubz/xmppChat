@@ -1,10 +1,12 @@
-package net.tylubz.chat.dialog;
+package net.tylubz.chat.contact_list;
 
 import net.tylubz.chat.BasePresenter;
 import net.tylubz.chat.BaseView;
-import net.tylubz.chat.dialog.model.Message;
+import net.tylubz.chat.contact_list.model.Contact;
+import net.tylubz.chat.contact_list.model.Message;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * Specifies the contract between the view and the presenter.
@@ -12,7 +14,7 @@ import java.io.File;
  * @author Sergei Lebedev
  */
 
-public class DialogContract {
+public class ContactListContract {
 
     interface View extends BaseView<Presenter> {
         void onButtonClick();
@@ -21,7 +23,8 @@ public class DialogContract {
     }
 
     interface Presenter extends BasePresenter {
-        void sendMessage(String jid, Message message);
+        void sendMessage(Message message);
         void sendFile(File file);
+        List<Contact> getContactList();
     }
 }

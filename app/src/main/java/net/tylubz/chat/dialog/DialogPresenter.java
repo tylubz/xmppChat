@@ -37,8 +37,8 @@ public class DialogPresenter implements DialogContract.Presenter {
     }
 
     @Override
-    public void sendMessage(Message message) {
-        xmppServiceTask.sendMessage(message.getMessage());
+    public void sendMessage(String jid, Message message) {
+        xmppServiceTask.sendMessage(jid, message.getMessage());
     }
 
     @Override

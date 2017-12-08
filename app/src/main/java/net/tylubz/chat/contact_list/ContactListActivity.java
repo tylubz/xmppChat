@@ -1,6 +1,8 @@
 package net.tylubz.chat.contact_list;
 
 import android.content.Intent;
+import android.os.StrictMode;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,21 +17,31 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import net.tylubz.chat.R;
+import net.tylubz.chat.contact_list.model.Contact;
+import net.tylubz.chat.contact_list.model.Message;
+import net.tylubz.chat.contact_list.services.XmppServiceTask;
 import net.tylubz.chat.dialog.DialogActivity;
-import net.tylubz.chat.dialog.dummy.DummyContent;
 import net.tylubz.chat.multidialog.MultiDialogActivity;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ContactListActivity extends AppCompatActivity {
+import static android.os.Build.VERSION.SDK_INT;
+
+public class ContactListActivity extends AppCompatActivity implements ContactListContract.View {
+
+    private ContactListContract.Presenter contactListPresenter;
+
+    private XmppServiceTask xmppService;
 
     public static final String ITEM_LIST = "itemList";
 
-    private String[] countries = { "Бразилия", "Аргентина", "Колумбия", "Чили", "Уругвай"};
-    private List<DummyContent> list = new ArrayList<>();
+    public static final String USER_NAME = "userName";
 
-    private ListView countriesList;
+    private String[] countries = { "Бразилия", "Аргентина", "Колумбия", "Чили", "Уругвай"};
+    private List<Contact> list = new ArrayList<>();
+
+    private ListView contactList;
     private Button createChatButton;
     private Button cancelChatButton;
 
@@ -41,26 +53,38 @@ public class ContactListActivity extends AppCompatActivity {
         createChatButton = (Button) findViewById(R.id.createChatButton);
         cancelChatButton = (Button) findViewById(R.id.cancelChatButton);
 
-        countriesList = (ListView) findViewById(R.id.countriesList);
+        contactList = (ListView) findViewById(R.id.contactList);
+
+//        TODO Remove after migrating to RXJava
+        if (SDK_INT > 8) {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                    .permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+        }
+
+        contactListPresenter = new ContactListPresenter(this);
+        List<Contact> contactList = contactListPresenter.getContactList();
+
+        List<String> cList = new ArrayList<>();
+        for(Contact contact: contactList) {cList.add(contact.getUserName());}
+
 
         // create adapter
         ArrayAdapter<String> adapter = new ArrayAdapter(this,
-                android.R.layout.simple_list_item_1, countries);
+                android.R.layout.simple_list_item_1, cList);
 
-        countriesList.setAdapter(adapter);
+        this.contactList.setAdapter(adapter);
 
         // add listener
-        countriesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        this.contactList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-//                TODO extend
-                String selectedItem = countries[i];
+
                 Intent intent = new Intent(view.getContext(), DialogActivity.class);
+                intent.putExtra(USER_NAME, cList.get(i));
                 startActivity(intent);
             }
         });
-
-
     }
 
     @Override
@@ -76,7 +100,7 @@ public class ContactListActivity extends AppCompatActivity {
                 android.R.layout.simple_list_item_multiple_choice, countries);
         createChatButton.setVisibility(View.VISIBLE);
         cancelChatButton.setVisibility(View.VISIBLE);
-        countriesList.setAdapter(adapter);
+        contactList.setAdapter(adapter);
         return true;
     }
 
@@ -86,12 +110,17 @@ public class ContactListActivity extends AppCompatActivity {
         cancelChatButton.setVisibility(View.INVISIBLE);
         ArrayAdapter<String> adapter = new ArrayAdapter(this,
                 android.R.layout.simple_list_item_1, countries);
-        countriesList.setAdapter(adapter);
+        contactList.setAdapter(adapter);
     }
 
     public void onCreateButtonClick(View view) {
+        onButtonClick();
+    }
+
+    @Override
+    public void onButtonClick() {
         Log.i("info", "Create button has been pressed");
-        SparseBooleanArray sparseArray = countriesList.getCheckedItemPositions();
+        SparseBooleanArray sparseArray = contactList.getCheckedItemPositions();
         ArrayList<String> countryList = new ArrayList<>();
         for(int i=0; i < countries.length;i++)
         {
@@ -107,4 +136,13 @@ public class ContactListActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    @Override
+    public void onMessageReceive(Message message) {
+//        TODO add notification for incoming message
+    }
+
+    @Override
+    public void setPresenter(@NonNull ContactListContract.Presenter presenter) {
+        contactListPresenter = presenter;
+    }
 }

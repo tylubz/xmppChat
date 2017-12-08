@@ -1,4 +1,4 @@
-package net.tylubz.chat.multidialog.model;
+package net.tylubz.chat.contact_list.model;
 
 /**
  * Created by slebedev on 05.12.2017.

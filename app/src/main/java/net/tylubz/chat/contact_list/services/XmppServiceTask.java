@@ -1,10 +1,10 @@
-package net.tylubz.chat.dialog.services;
+package net.tylubz.chat.contact_list.services;
 
 import android.os.AsyncTask;
 import android.util.Log;
 
 import net.tylubz.chat.configuration.Property;
-import net.tylubz.chat.dialog.MessageListener;
+import net.tylubz.chat.contact_list.model.Contact;
 
 import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.SASLAuthentication;
@@ -14,26 +14,26 @@ import org.jivesoftware.smack.chat2.Chat;
 import org.jivesoftware.smack.chat2.ChatManager;
 import org.jivesoftware.smack.chat2.IncomingChatMessageListener;
 import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.roster.Roster;
+import org.jivesoftware.smack.roster.RosterEntry;
 import org.jivesoftware.smack.sasl.core.SCRAMSHA1Mechanism;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
 import org.jivesoftware.smackx.filetransfer.FileTransferManager;
 import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
-import org.jivesoftware.smackx.filetransfer.Socks5TransferNegotiator;
 import org.jxmpp.jid.BareJid;
 import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.EntityFullJid;
-import org.jxmpp.jid.FullJid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.jid.parts.Resourcepart;
 import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.io.File;
 import java.io.IOException;
-import java.security.KeyStore;
-import java.security.NoSuchAlgorithmException;
-
-import javax.net.ssl.KeyManagerFactory;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Represents a service for interaction
@@ -46,8 +46,6 @@ public class XmppServiceTask extends AsyncTask<Void, Void, Void> {
     private AbstractXMPPConnection connection;
 
     private MessageListener messageListener;
-
-//    private TextView view;
 
     public XmppServiceTask() {}
 
@@ -91,7 +89,7 @@ public class XmppServiceTask extends AsyncTask<Void, Void, Void> {
      * @throws InterruptedException if problem occurs with processing connection
      * @throws SmackException if problem occurs with processing connection
      */
-    private void establishConnection() throws XMPPException, IOException, InterruptedException, SmackException {
+    public void establishConnection() throws XMPPException, IOException, InterruptedException, SmackException {
         final String hostName = "jabber.ru";
         final String xmppDomainName = "jabber.ru";
         final int portNumber = 5222;
@@ -123,10 +121,11 @@ public class XmppServiceTask extends AsyncTask<Void, Void, Void> {
                 .addIncomingListener(new IncomingChatMessageListener() {
                     @Override
                     public void newIncomingMessage(EntityBareJid from, Message message, Chat chat) {
-                        messageListener.push(new net.tylubz.chat.dialog.model.Message(message.getBody()));
+                        messageListener.push(new net.tylubz.chat.contact_list.model.Message(message.getBody()));
                     }
                 });
     }
+
 
     /**
      * Sends a message to specified user
@@ -140,14 +139,27 @@ public class XmppServiceTask extends AsyncTask<Void, Void, Void> {
      * to a specified user
      * @throws InterruptedException if something goes wrong
      */
-    public void sendMessage(String jid, String message) {
+    public void sendMessage(String jid, String message) throws XmppStringprepException, SmackException.NotConnectedException, InterruptedException {
+        EntityBareJid bareJid = JidCreate.entityBareFrom(jid);
+        ChatManager.getInstanceFor(connection)
+                .chatWith(bareJid)
+                .send(message);
+    }
+
+    //    TODO remove after testing
+    public void sendMessage(String message)  {
+        final String jid = "golub578@jabber.ru";
         try {
             EntityBareJid bareJid = JidCreate.entityBareFrom(jid);
             ChatManager.getInstanceFor(connection)
                     .chatWith(bareJid)
                     .send(message);
-        } catch (Exception e) {
-            //do nothing
+        } catch (SmackException.NotConnectedException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (XmppStringprepException e) {
+            e.printStackTrace();
         }
     }
 
@@ -174,6 +186,33 @@ public class XmppServiceTask extends AsyncTask<Void, Void, Void> {
         } catch (SmackException e) {
             e.printStackTrace();
         }
+    }
+
+
+    public List<Contact> getContactList() {
+        Roster roster = Roster.getInstanceFor(connection);
+        if (!roster.isLoaded())
+            try {
+                roster.reloadAndWait();
+            } catch (SmackException.NotLoggedInException e) {
+                e.printStackTrace();
+            } catch (SmackException.NotConnectedException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        Collection<RosterEntry> entries = roster.getEntries();
+        return toContactList(entries, roster);
+    }
+
+    private List<Contact> toContactList(Collection<RosterEntry> entries, Roster roster) {
+        List<Contact> contactList = new ArrayList<>();
+        for (RosterEntry entry: entries) {
+            Presence presence = roster.getPresence(entry.getJid());
+            String userName = entry.getJid().getLocalpartOrNull() + "@" + entry.getJid().getDomain();
+            contactList.add(new Contact(userName, presence.getMode().toString()));
+        }
+        return contactList;
     }
 
     public AbstractXMPPConnection getConnection() {

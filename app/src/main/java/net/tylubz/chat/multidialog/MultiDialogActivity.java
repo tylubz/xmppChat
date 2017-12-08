@@ -35,7 +35,7 @@ public class MultiDialogActivity extends AppCompatActivity implements MultiDialo
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_multi_dialog);
-        editText = findViewById(R.id.editText);
+        editText = findViewById(R.id.editTypeText);
         sendButton = findViewById(R.id.sendButton);
         textView = findViewById(R.id.textView);
         textView.setMovementMethod(new ScrollingMovementMethod());
