@@ -5,6 +5,7 @@ import net.tylubz.chat.BaseView;
 import net.tylubz.chat.singledialog.model.Message;
 
 import java.io.File;
+import java.io.InputStream;
 
 /**
  * Specifies the contract between the view and the presenter.
@@ -22,6 +23,6 @@ public class SingleDialogContract {
 
     interface Presenter extends BasePresenter {
         void sendMessage(String jid, Message message);
-        void sendFile(File file);
+        void sendFile(File file, InputStream inputStream, int size);
     }
 }

@@ -14,10 +14,14 @@ import org.jivesoftware.smack.chat2.Chat;
 import org.jivesoftware.smack.chat2.ChatManager;
 import org.jivesoftware.smack.chat2.IncomingChatMessageListener;
 import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.proxy.ProxyInfo;
+import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smack.sasl.core.SCRAMSHA1Mechanism;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
+import org.jivesoftware.smackx.filetransfer.FileTransferListener;
 import org.jivesoftware.smackx.filetransfer.FileTransferManager;
+import org.jivesoftware.smackx.filetransfer.FileTransferRequest;
 import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
 import org.jxmpp.jid.BareJid;
 import org.jxmpp.jid.EntityBareJid;
@@ -120,6 +124,32 @@ public class XmppServiceTask extends AsyncTask<Void, Void, Void> {
                         messageListener.push(new net.tylubz.chat.singledialog.model.Message(message.getBody()));
                     }
                 });
+
+
+//        TODO REMOVE
+//        final String jid = "golub578@jabber.ru";
+//        EntityFullJid entityFullJid = JidCreate.entityFullFrom(jid);
+
+        // Create the file transfer manager
+        FileTransferManager manager = FileTransferManager.getInstanceFor(connection);
+        // Create the outgoing file transfer
+//        OutgoingFileTransfer transfer = manager.createOutgoingFileTransfer(entityFullJid);
+
+        manager.addFileTransferListener(new FileTransferListener() {
+            @Override
+            public void fileTransferRequest(FileTransferRequest request) {
+                try {
+                    request.accept().recieveFile();
+                } catch (SmackException e) {
+                    e.printStackTrace();
+                } catch (XMPPException.XMPPErrorException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
     }
 
     /**
@@ -153,10 +183,17 @@ public class XmppServiceTask extends AsyncTask<Void, Void, Void> {
         EntityFullJid entityFullJid = null;
         try {
             BareJid bareJid = JidCreate.bareFrom(jid);
-            entityFullJid = JidCreate.fullFrom(bareJid.asEntityBareJidIfPossible(), Resourcepart.EMPTY);
+//            entityFullJid = JidCreate.fullFrom(bareJid.asEntityBareJidIfPossible(), Resourcepart.EMPTY);
+            entityFullJid = bareJid.asEntityFullJidIfPossible();
         } catch (XmppStringprepException e) {
             e.printStackTrace();
         }
+        try {
+            BareJid jid1 = Roster.getInstanceFor(connection).getEntry(JidCreate.bareFrom(jid)).getJid();
+        } catch (XmppStringprepException e) {
+            e.printStackTrace();
+        }
+
 
         // Create the file transfer manager
         FileTransferManager manager = FileTransferManager.getInstanceFor(connection);
