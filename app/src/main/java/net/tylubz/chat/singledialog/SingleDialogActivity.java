@@ -1,4 +1,4 @@
-package net.tylubz.chat.dialog;
+package net.tylubz.chat.singledialog;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import net.tylubz.chat.R;
 import net.tylubz.chat.contact_list.ContactListActivity;
-import net.tylubz.chat.dialog.model.Message;
+import net.tylubz.chat.singledialog.model.Message;
 
 
 import java.io.File;
@@ -26,11 +26,11 @@ import java.nio.charset.Charset;
  *
  * @author Sergei Lebedev
  */
-public class DialogActivity extends AppCompatActivity implements DialogContract.View {
+public class SingleDialogActivity extends AppCompatActivity implements SingleDialogContract.View {
 
     private static final String DELIMITER = "\n";
 
-    private DialogContract.Presenter dialogPresenter;
+    private SingleDialogContract.Presenter dialogPresenter;
 
     //    ui components
     private Button sendButton;
@@ -40,14 +40,14 @@ public class DialogActivity extends AppCompatActivity implements DialogContract.
 
     private String jid;
 
-    public DialogActivity() throws IOException {
+    public SingleDialogActivity() throws IOException {
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_single_dialog);
         editTypeText = findViewById(R.id.editTypeText);
         editText = findViewById(R.id.editText);
         sendButton = findViewById(R.id.sendButton);
@@ -59,11 +59,11 @@ public class DialogActivity extends AppCompatActivity implements DialogContract.
             jid = (String) extras.get(ContactListActivity.USER_NAME);
             editText.setText("Dialog with " + jid);
         }
-        dialogPresenter = new DialogPresenter(this);
+        dialogPresenter = new SingleDialogPresenter(this);
     }
 
     @Override
-    public void setPresenter(@NonNull DialogContract.Presenter presenter) {
+    public void setPresenter(@NonNull SingleDialogContract.Presenter presenter) {
         dialogPresenter = presenter;
     }
 

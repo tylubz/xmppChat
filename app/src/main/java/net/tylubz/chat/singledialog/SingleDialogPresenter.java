@@ -1,7 +1,7 @@
-package net.tylubz.chat.dialog;
+package net.tylubz.chat.singledialog;
 
-import net.tylubz.chat.dialog.model.Message;
-import net.tylubz.chat.dialog.services.XmppServiceTask;
+import net.tylubz.chat.singledialog.model.Message;
+import net.tylubz.chat.singledialog.services.XmppServiceTask;
 
 import java.io.File;
 
@@ -11,13 +11,13 @@ import java.io.File;
  * @author Sergei Lebedev
  */
 
-public class DialogPresenter implements DialogContract.Presenter {
+public class SingleDialogPresenter implements SingleDialogContract.Presenter {
 
-    private final DialogContract.View dialogView;
+    private final SingleDialogContract.View dialogView;
 
     private final XmppServiceTask xmppServiceTask;
 
-    public DialogPresenter(final DialogContract.View dialogView) {
+    public SingleDialogPresenter(final SingleDialogContract.View dialogView) {
 
         xmppServiceTask = new XmppServiceTask(msg -> dialogView.onMessageReceive(msg));
         xmppServiceTask.execute();

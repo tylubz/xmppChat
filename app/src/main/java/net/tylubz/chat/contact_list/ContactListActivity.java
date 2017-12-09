@@ -17,7 +17,7 @@ import android.widget.ListView;
 
 import net.tylubz.chat.R;
 import net.tylubz.chat.contact_list.model.Message;
-import net.tylubz.chat.dialog.DialogActivity;
+import net.tylubz.chat.singledialog.SingleDialogActivity;
 import net.tylubz.chat.multidialog.MultiDialogActivity;
 import net.tylubz.chat.shared.model.JidContact;
 
@@ -70,7 +70,7 @@ public class ContactListActivity extends AppCompatActivity implements ContactLis
 
         // add listener
         this.contactList.setOnItemClickListener((adapterView, view, i, l) -> {
-            Intent intent = new Intent(view.getContext(), DialogActivity.class);
+            Intent intent = new Intent(view.getContext(), SingleDialogActivity.class);
             intent.putExtra(USER_NAME, jidContactList.get(i));
             startActivity(intent);
         });
@@ -103,7 +103,7 @@ public class ContactListActivity extends AppCompatActivity implements ContactLis
         contactList.setAdapter(adapter);
         // add listener
         this.contactList.setOnItemClickListener((adapterView, itemView, i, l) -> {
-            Intent intent = new Intent(itemView.getContext(), DialogActivity.class);
+            Intent intent = new Intent(itemView.getContext(), SingleDialogActivity.class);
             intent.putExtra(USER_NAME, jidContactList.get(i));
             startActivity(intent);
         });

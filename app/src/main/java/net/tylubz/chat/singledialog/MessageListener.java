@@ -1,6 +1,6 @@
-package net.tylubz.chat.dialog;
+package net.tylubz.chat.singledialog;
 
-import net.tylubz.chat.dialog.model.Message;
+import net.tylubz.chat.singledialog.model.Message;
 
 /**
  * The message listener interface

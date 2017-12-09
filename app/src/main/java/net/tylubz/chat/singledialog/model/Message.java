@@ -1,4 +1,4 @@
-package net.tylubz.chat.dialog.model;
+package net.tylubz.chat.singledialog.model;
 
 /**
  * @author Sergei Lebedev

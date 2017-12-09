@@ -1,10 +1,10 @@
-package net.tylubz.chat.dialog.services;
+package net.tylubz.chat.singledialog.services;
 
 import android.os.AsyncTask;
 import android.util.Log;
 
 import net.tylubz.chat.configuration.Property;
-import net.tylubz.chat.dialog.MessageListener;
+import net.tylubz.chat.singledialog.MessageListener;
 
 import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.SASLAuthentication;
@@ -19,21 +19,15 @@ import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
 import org.jivesoftware.smackx.filetransfer.FileTransferManager;
 import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
-import org.jivesoftware.smackx.filetransfer.Socks5TransferNegotiator;
 import org.jxmpp.jid.BareJid;
 import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.EntityFullJid;
-import org.jxmpp.jid.FullJid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.jid.parts.Resourcepart;
 import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.io.File;
 import java.io.IOException;
-import java.security.KeyStore;
-import java.security.NoSuchAlgorithmException;
-
-import javax.net.ssl.KeyManagerFactory;
 
 /**
  * Represents a service for interaction
@@ -123,7 +117,7 @@ public class XmppServiceTask extends AsyncTask<Void, Void, Void> {
                 .addIncomingListener(new IncomingChatMessageListener() {
                     @Override
                     public void newIncomingMessage(EntityBareJid from, Message message, Chat chat) {
-                        messageListener.push(new net.tylubz.chat.dialog.model.Message(message.getBody()));
+                        messageListener.push(new net.tylubz.chat.singledialog.model.Message(message.getBody()));
                     }
                 });
     }

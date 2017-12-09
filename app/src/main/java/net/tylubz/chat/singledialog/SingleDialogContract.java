@@ -1,8 +1,8 @@
-package net.tylubz.chat.dialog;
+package net.tylubz.chat.singledialog;
 
 import net.tylubz.chat.BasePresenter;
 import net.tylubz.chat.BaseView;
-import net.tylubz.chat.dialog.model.Message;
+import net.tylubz.chat.singledialog.model.Message;
 
 import java.io.File;
 
@@ -12,7 +12,7 @@ import java.io.File;
  * @author Sergei Lebedev
  */
 
-public class DialogContract {
+public class SingleDialogContract {
 
     interface View extends BaseView<Presenter> {
         void onButtonClick();

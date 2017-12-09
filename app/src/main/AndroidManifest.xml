@@ -20,7 +20,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".dialog.DialogActivity"></activity>
+        <activity android:name=".singledialog.SingleDialogActivity"></activity>
         <activity android:name=".multidialog.MultiDialogActivity"></activity>
     </application>
 
