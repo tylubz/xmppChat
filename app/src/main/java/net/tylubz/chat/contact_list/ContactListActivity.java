@@ -11,14 +11,12 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 
 import net.tylubz.chat.R;
 import net.tylubz.chat.contact_list.model.Message;
-import net.tylubz.chat.contact_list.services.XmppServiceTask;
 import net.tylubz.chat.dialog.DialogActivity;
 import net.tylubz.chat.multidialog.MultiDialogActivity;
 import net.tylubz.chat.shared.model.JidContact;
@@ -32,13 +30,10 @@ public class ContactListActivity extends AppCompatActivity implements ContactLis
 
     private ContactListContract.Presenter contactListPresenter;
 
-    private XmppServiceTask xmppService;
-
     public static final String ITEM_LIST = "itemList";
 
     public static final String USER_NAME = "userName";
 
-    private String[] countries = { "Бразилия", "Аргентина", "Колумбия", "Чили", "Уругвай"};
     private List<String> jidContactList = new ArrayList<>();
 
     private ListView contactList;
@@ -74,14 +69,10 @@ public class ContactListActivity extends AppCompatActivity implements ContactLis
         this.contactList.setAdapter(adapter);
 
         // add listener
-        this.contactList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-//                view.get
-//                Intent intent = new Intent(view.getContext(), DialogActivity.class);
-//                intent.putExtra(USER_NAME, jidContactList.get(i));
-//                startActivity(intent);
-            }
+        this.contactList.setOnItemClickListener((adapterView, view, i, l) -> {
+            Intent intent = new Intent(view.getContext(), DialogActivity.class);
+            intent.putExtra(USER_NAME, jidContactList.get(i));
+            startActivity(intent);
         });
     }
 
@@ -99,6 +90,7 @@ public class ContactListActivity extends AppCompatActivity implements ContactLis
         createChatButton.setVisibility(View.VISIBLE);
         cancelChatButton.setVisibility(View.VISIBLE);
         contactList.setAdapter(adapter);
+        contactList.setOnItemClickListener(null);
         return true;
     }
 
@@ -109,6 +101,12 @@ public class ContactListActivity extends AppCompatActivity implements ContactLis
         ArrayAdapter<String> adapter = new ArrayAdapter(this,
                 android.R.layout.simple_list_item_1, jidContactList);
         contactList.setAdapter(adapter);
+        // add listener
+        this.contactList.setOnItemClickListener((adapterView, itemView, i, l) -> {
+            Intent intent = new Intent(itemView.getContext(), DialogActivity.class);
+            intent.putExtra(USER_NAME, jidContactList.get(i));
+            startActivity(intent);
+        });
     }
 
     public void onCreateButtonClick(View view) {
@@ -128,10 +126,11 @@ public class ContactListActivity extends AppCompatActivity implements ContactLis
             }
 
         }
-        Log.i("info", "Create button has been pressed");
         Intent intent = new Intent(this, MultiDialogActivity.class);
         intent.putExtra(ITEM_LIST, markedJids);
         startActivity(intent);
+//        TODO fix
+        onCancelButtonClick(null);
     }
 
     @Override
