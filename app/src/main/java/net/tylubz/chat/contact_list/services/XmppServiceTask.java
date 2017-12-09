@@ -4,7 +4,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import net.tylubz.chat.configuration.Property;
-import net.tylubz.chat.contact_list.model.Contact;
+import net.tylubz.chat.shared.model.JidContact;
 
 import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.SASLAuthentication;
@@ -189,7 +189,7 @@ public class XmppServiceTask extends AsyncTask<Void, Void, Void> {
     }
 
 
-    public List<Contact> getContactList() {
+    public List<JidContact> getContactList() {
         Roster roster = Roster.getInstanceFor(connection);
         if (!roster.isLoaded())
             try {
@@ -205,12 +205,12 @@ public class XmppServiceTask extends AsyncTask<Void, Void, Void> {
         return toContactList(entries, roster);
     }
 
-    private List<Contact> toContactList(Collection<RosterEntry> entries, Roster roster) {
-        List<Contact> contactList = new ArrayList<>();
+    private List<JidContact> toContactList(Collection<RosterEntry> entries, Roster roster) {
+        List<JidContact> contactList = new ArrayList<>();
         for (RosterEntry entry: entries) {
             Presence presence = roster.getPresence(entry.getJid());
             String userName = entry.getJid().getLocalpartOrNull() + "@" + entry.getJid().getDomain();
-            contactList.add(new Contact(userName, presence.getMode().toString()));
+            contactList.add(new JidContact(userName, presence.getMode().toString()));
         }
         return contactList;
     }

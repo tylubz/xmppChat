@@ -17,11 +17,11 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import net.tylubz.chat.R;
-import net.tylubz.chat.contact_list.model.Contact;
 import net.tylubz.chat.contact_list.model.Message;
 import net.tylubz.chat.contact_list.services.XmppServiceTask;
 import net.tylubz.chat.dialog.DialogActivity;
 import net.tylubz.chat.multidialog.MultiDialogActivity;
+import net.tylubz.chat.shared.model.JidContact;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +39,7 @@ public class ContactListActivity extends AppCompatActivity implements ContactLis
     public static final String USER_NAME = "userName";
 
     private String[] countries = { "Бразилия", "Аргентина", "Колумбия", "Чили", "Уругвай"};
-    private List<Contact> list = new ArrayList<>();
+    private List<String> jidContactList = new ArrayList<>();
 
     private ListView contactList;
     private Button createChatButton;
@@ -63,15 +63,13 @@ public class ContactListActivity extends AppCompatActivity implements ContactLis
         }
 
         contactListPresenter = new ContactListPresenter(this);
-        List<Contact> contactList = contactListPresenter.getContactList();
+        List<JidContact> contactList = contactListPresenter.getContactList();
 
-        List<String> cList = new ArrayList<>();
-        for(Contact contact: contactList) {cList.add(contact.getUserName());}
-
+        for(JidContact contact: contactList) {jidContactList.add(contact.getJid());}
 
         // create adapter
         ArrayAdapter<String> adapter = new ArrayAdapter(this,
-                android.R.layout.simple_list_item_1, cList);
+                android.R.layout.simple_list_item_1, jidContactList);
 
         this.contactList.setAdapter(adapter);
 
@@ -79,10 +77,10 @@ public class ContactListActivity extends AppCompatActivity implements ContactLis
         this.contactList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-
-                Intent intent = new Intent(view.getContext(), DialogActivity.class);
-                intent.putExtra(USER_NAME, cList.get(i));
-                startActivity(intent);
+//                view.get
+//                Intent intent = new Intent(view.getContext(), DialogActivity.class);
+//                intent.putExtra(USER_NAME, jidContactList.get(i));
+//                startActivity(intent);
             }
         });
     }
@@ -97,7 +95,7 @@ public class ContactListActivity extends AppCompatActivity implements ContactLis
     public boolean addParticipants(MenuItem item) {
         Log.i("info", "Item has been selected");
         ArrayAdapter<String> adapter = new ArrayAdapter(this,
-                android.R.layout.simple_list_item_multiple_choice, countries);
+                android.R.layout.simple_list_item_multiple_choice, jidContactList);
         createChatButton.setVisibility(View.VISIBLE);
         cancelChatButton.setVisibility(View.VISIBLE);
         contactList.setAdapter(adapter);
@@ -109,7 +107,7 @@ public class ContactListActivity extends AppCompatActivity implements ContactLis
         createChatButton.setVisibility(View.INVISIBLE);
         cancelChatButton.setVisibility(View.INVISIBLE);
         ArrayAdapter<String> adapter = new ArrayAdapter(this,
-                android.R.layout.simple_list_item_1, countries);
+                android.R.layout.simple_list_item_1, jidContactList);
         contactList.setAdapter(adapter);
     }
 
@@ -121,18 +119,18 @@ public class ContactListActivity extends AppCompatActivity implements ContactLis
     public void onButtonClick() {
         Log.i("info", "Create button has been pressed");
         SparseBooleanArray sparseArray = contactList.getCheckedItemPositions();
-        ArrayList<String> countryList = new ArrayList<>();
-        for(int i=0; i < countries.length;i++)
+        ArrayList<String> markedJids = new ArrayList<>();
+        for(int i=0; i < jidContactList.size();i++)
         {
             if(sparseArray.get(i)) {
-                Log.i("info", "Item " + countries[i] + " has been selected");
-                countryList.add(countries[i]);
+                Log.i("info", "Item " + jidContactList.get(i) + " has been selected");
+                markedJids.add(jidContactList.get(i));
             }
 
         }
         Log.i("info", "Create button has been pressed");
         Intent intent = new Intent(this, MultiDialogActivity.class);
-        intent.putExtra(ITEM_LIST, countryList);
+        intent.putExtra(ITEM_LIST, markedJids);
         startActivity(intent);
     }
 

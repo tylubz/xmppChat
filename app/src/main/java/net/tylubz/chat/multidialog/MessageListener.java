@@ -1,6 +1,6 @@
 package net.tylubz.chat.multidialog;
 
-import net.tylubz.chat.multidialog.model.Message;
+import net.tylubz.chat.shared.model.Message;
 
 /**
  * The message listener interface

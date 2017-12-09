@@ -13,8 +13,8 @@ import android.widget.TextView;
 
 import net.tylubz.chat.R;
 import net.tylubz.chat.contact_list.ContactListActivity;
-import net.tylubz.chat.multidialog.model.Contact;
-import net.tylubz.chat.multidialog.model.Message;
+import net.tylubz.chat.shared.model.JidContact;
+import net.tylubz.chat.shared.model.Message;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,10 +75,11 @@ public class MultiDialogActivity extends AppCompatActivity implements MultiDialo
     public void onButtonClick() {
         Editable editable = editText.getText();
 //        TODO extend logic for catching errors
-          dialogPresenter.createGroupChat();
-//        dialogPresenter.sendMessage(new Message(editable.toString()));
-//        textView.append(editText.getText() + DELIMITER);
-//        editable.clear();
+        List<JidContact> jidContactList = new ArrayList<>();
+        jidContactList.add(new JidContact("golub578@jabber.ru", "unknown"));
+        jidContactList.add(new JidContact("cheburek578@jabber.ru", "unknown"));
+        dialogPresenter.createGroupChat(jidContactList);
+        dialogPresenter.sendMessage(new Message("Hello!!!"));
     }
 
     @Override
@@ -87,7 +88,7 @@ public class MultiDialogActivity extends AppCompatActivity implements MultiDialo
     }
 
     @Override
-    public void onContactListReceive(List<Contact> contactList) {
+    public void onContactListReceive(List<JidContact> jidContactList) {
 
     }
 

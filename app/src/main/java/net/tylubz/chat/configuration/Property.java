@@ -12,7 +12,7 @@ public class Property {
 
 
     public static final String HOST_NAME = "jabber.ru";
-    public static final String SERVICE_NAME = "jabber.ru";
+    public static final String XMPP_DOMAIN_NAME = "jabber.ru";
     public static final Integer PORT_NUMBER = 5222;
 
     public static final String USER_NAME = "suslik578";

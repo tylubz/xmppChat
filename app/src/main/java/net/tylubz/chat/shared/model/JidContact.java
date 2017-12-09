@@ -1,26 +1,26 @@
-package net.tylubz.chat.contact_list.model;
+package net.tylubz.chat.shared.model;
 
 /**
  * Created by slebedev on 05.12.2017.
  */
 
-public class Contact {
+public class JidContact {
 
-    private String userName;
+    private String jid;
 
     private String presence;
 
-    public Contact(String userName, String presence) {
-        this.userName = userName;
+    public JidContact(String jid, String presence) {
+        this.jid = jid;
         this.presence = presence;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getJid() {
+        return jid;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setJid(String jid) {
+        this.jid = jid;
     }
 
     public String getPresence() {
@@ -36,23 +36,23 @@ public class Contact {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Contact contact = (Contact) o;
+        JidContact jidContact = (JidContact) o;
 
-        if (!userName.equals(contact.userName)) return false;
-        return presence != null ? presence.equals(contact.presence) : contact.presence == null;
+        if (!jid.equals(jidContact.jid)) return false;
+        return presence != null ? presence.equals(jidContact.presence) : jidContact.presence == null;
     }
 
     @Override
     public int hashCode() {
-        int result = userName.hashCode();
+        int result = jid.hashCode();
         result = 31 * result + (presence != null ? presence.hashCode() : 0);
         return result;
     }
 
     @Override
     public String toString() {
-        return "Contact{" +
-                "userName='" + userName + '\'' +
+        return "JidContact{" +
+                "jid='" + jid + '\'' +
                 ", presence='" + presence + '\'' +
                 '}';
     }

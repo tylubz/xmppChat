@@ -2,8 +2,8 @@ package net.tylubz.chat.contact_list;
 
 import net.tylubz.chat.BasePresenter;
 import net.tylubz.chat.BaseView;
-import net.tylubz.chat.contact_list.model.Contact;
 import net.tylubz.chat.contact_list.model.Message;
+import net.tylubz.chat.shared.model.JidContact;
 
 import java.io.File;
 import java.util.List;
@@ -25,6 +25,6 @@ public class ContactListContract {
     interface Presenter extends BasePresenter {
         void sendMessage(Message message);
         void sendFile(File file);
-        List<Contact> getContactList();
+        List<JidContact> getContactList();
     }
 }

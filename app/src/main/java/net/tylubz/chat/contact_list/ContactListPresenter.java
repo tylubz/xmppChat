@@ -1,9 +1,9 @@
 package net.tylubz.chat.contact_list;
 
 
-import net.tylubz.chat.contact_list.model.Contact;
 import net.tylubz.chat.contact_list.model.Message;
 import net.tylubz.chat.contact_list.services.XmppServiceTask;
+import net.tylubz.chat.shared.model.JidContact;
 
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
@@ -25,8 +25,6 @@ import java.util.List;
 public class ContactListPresenter implements ContactListContract.Presenter {
 
     private final ContactListContract.View dialogView;
-
-    List<Contact> contactList = new ArrayList<>();
 
     private final XmppServiceTask xmppServiceTask;
 
@@ -65,7 +63,7 @@ public class ContactListPresenter implements ContactListContract.Presenter {
     }
 
     @Override
-    public List<Contact> getContactList() {
+    public List<JidContact> getContactList() {
 //        Completable.fromAction(()-> xmppService.establishConnection())
 //                .observeOn(Schedulers.io())
 //                .doOnComplete(() -> { list = xmppService.getContactList();

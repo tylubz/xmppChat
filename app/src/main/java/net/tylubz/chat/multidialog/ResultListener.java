@@ -1,6 +1,6 @@
 package net.tylubz.chat.multidialog;
 
-import net.tylubz.chat.multidialog.model.Contact;
+import net.tylubz.chat.shared.model.JidContact;
 
 import java.util.List;
 
@@ -9,5 +9,5 @@ import java.util.List;
  */
 
 public interface ResultListener {
-    void pushResult(List<Contact> result);
+    void pushResult(List<JidContact> result);
 }

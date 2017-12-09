@@ -1,7 +1,7 @@
 package net.tylubz.chat.multidialog;
 
-import net.tylubz.chat.multidialog.model.Contact;
-import net.tylubz.chat.multidialog.model.Message;
+import net.tylubz.chat.shared.model.JidContact;
+import net.tylubz.chat.shared.model.Message;
 import net.tylubz.chat.multidialog.services.XmppServiceTask;
 
 import java.util.List;
@@ -44,7 +44,7 @@ public class MultiDialogPresenter implements MultiDialogContract.Presenter {
     }
 
     @Override
-    public void createGroupChat() {
-        xmppServiceTask.createGroupChat(null);
+    public void createGroupChat(List<JidContact> participants) {
+        xmppServiceTask.createGroupChat(participants);
     }
 }
