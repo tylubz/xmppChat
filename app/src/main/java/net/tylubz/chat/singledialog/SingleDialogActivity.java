@@ -6,14 +6,14 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.ListView;
 
 import net.tylubz.chat.R;
 import net.tylubz.chat.contact_list.ContactListActivity;
+import net.tylubz.chat.singledialog.adapters.MessageAdapter;
 import net.tylubz.chat.singledialog.model.Message;
 
 
@@ -22,6 +22,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import static android.os.Build.VERSION.SDK_INT;
 
@@ -36,11 +40,15 @@ public class SingleDialogActivity extends AppCompatActivity implements SingleDia
 
     private SingleDialogContract.Presenter dialogPresenter;
 
+    private List<Message> msgList;
+
+    private ListView listView;
+    private MessageAdapter messageAdapter;
+
     //    ui components
     private Button sendButton;
     private EditText editText;
     private EditText editTypeText;
-    private TextView textView;
 
     private String jid;
 
@@ -55,8 +63,6 @@ public class SingleDialogActivity extends AppCompatActivity implements SingleDia
         editTypeText = findViewById(R.id.editTypeText);
         editText = findViewById(R.id.editText);
         sendButton = findViewById(R.id.sendButton);
-        textView = findViewById(R.id.textView);
-        textView.setMovementMethod(new ScrollingMovementMethod());
 
         //        TODO Remove after migrating to RXJava
         if (SDK_INT > 8) {
@@ -70,6 +76,15 @@ public class SingleDialogActivity extends AppCompatActivity implements SingleDia
             jid = (String) extras.get(ContactListActivity.USER_NAME);
             editText.setText(jid.replace("@jabber.ru", "") + " (online)");
         }
+
+        listView = (ListView)findViewById(R.id.message_list);
+
+        msgList = new ArrayList<>();
+        msgList.add(new Message("Hello!", "golub", "23:55"));
+        msgList.add(new Message("Hi!", "suslik", "23:56"));
+        messageAdapter = new MessageAdapter(msgList, getApplicationContext());
+
+        listView.setAdapter(messageAdapter);
         dialogPresenter = new SingleDialogPresenter(this);
     }
 
@@ -130,15 +145,17 @@ public class SingleDialogActivity extends AppCompatActivity implements SingleDia
     @Override
     public void onButtonClick() {
         Editable editable = editTypeText.getText();
+        msgList.add(new Message(editable.toString(), "me", new SimpleDateFormat("HH:mm:ss").format(new Date())));
+        messageAdapter.notifyDataSetChanged();
 //        TODO extend logic for catching errors
         dialogPresenter.sendMessage(jid, new Message(editable.toString()));
-        textView.append(editTypeText.getText() + DELIMITER);
         editable.clear();
     }
 
     @Override
     public void onMessageReceive(Message message) {
-        textView.append(message.getMessage() + DELIMITER);
+        msgList.add(new Message(message.getMessage(), "from", new SimpleDateFormat("HH:mm:ss").format(new Date())));
+        messageAdapter.notifyDataSetChanged();
     }
 
     @Override
