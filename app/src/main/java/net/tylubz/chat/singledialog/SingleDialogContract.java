@@ -23,6 +23,5 @@ public class SingleDialogContract {
 
     interface Presenter extends BasePresenter {
         void sendMessage(String jid, Message message);
-        void sendFile(File file, InputStream inputStream, int size);
     }
 }
