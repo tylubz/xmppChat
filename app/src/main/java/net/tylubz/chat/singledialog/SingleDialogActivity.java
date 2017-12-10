@@ -1,6 +1,5 @@
 package net.tylubz.chat.singledialog;
 
-import android.content.Context;
 import android.os.StrictMode;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -17,11 +16,7 @@ import net.tylubz.chat.singledialog.adapters.MessageAdapter;
 import net.tylubz.chat.singledialog.model.Message;
 
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -35,8 +30,6 @@ import static android.os.Build.VERSION.SDK_INT;
  * @author Sergei Lebedev
  */
 public class SingleDialogActivity extends AppCompatActivity implements SingleDialogContract.View {
-
-    private static final String DELIMITER = "\n";
 
     private SingleDialogContract.Presenter dialogPresenter;
 
@@ -100,46 +93,6 @@ public class SingleDialogActivity extends AppCompatActivity implements SingleDia
      */
     public void onButtonClick(View view) {
         onButtonClick();
-    }
-
-
-    public static File sendFile(Context context) throws IOException {
-        File cacheFile = new File(context.getCacheDir(), "file.txt");
-        try {
-//            File file = context.getFileStreamPath("raw/file.txt");
-//            InputStream inputStream = context.getAssets().open("raw/file.txt");
-            try {
-                FileOutputStream outputStream = new FileOutputStream(cacheFile);
-                try {
-//                    byte[] buf = new byte[1024];
-                    byte[] buf =  "TestText 123".getBytes(Charset.forName("UTF-8"));
-//                    String.
-                    int len;
-//                    while ((len = inputStream.read(buf)) > 0) {
-                        outputStream.write(buf, 0, buf.length);
-//                    }
-                } finally {
-                    outputStream.close();
-                }
-            } finally {
-//                inputStream.close();
-            }
-        } catch (IOException e) {
-            throw new IOException("Could not open robot png", e);
-        }
-        return cacheFile;
-    }
-
-    public void onFileButtonClick(View view) {
-        try {
-            File file = sendFile(view.getContext());
-            InputStream inputStream = view.getContext().getResources().openRawResource(R.raw.file);
-            int size = inputStream.available();
-            dialogPresenter.sendFile(file, inputStream, size);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
     }
 
     @Override
