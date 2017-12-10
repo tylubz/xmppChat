@@ -50,7 +50,6 @@ public class XmppServiceTask extends AsyncTask<Void, Void, Void> {
 
     private ResultListener resultListener;
 
-//    private TextView view;
 
     public XmppServiceTask() {}
 
