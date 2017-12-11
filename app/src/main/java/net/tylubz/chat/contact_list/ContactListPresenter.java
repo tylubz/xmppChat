@@ -55,13 +55,13 @@ public class ContactListPresenter implements ContactListContract.Presenter {
     }
 
     @Override
-    public void sendMessage(Message message) {
-        xmppServiceTask.sendMessage(message.getMessage());
+    public void addUser(String userName) {
+        xmppServiceTask.inviteUser(userName, userName);
     }
 
     @Override
-    public void sendFile(File file) {
-        xmppServiceTask.sendFile(file);
+    public void sendMessage(Message message) {
+        xmppServiceTask.sendMessage(message.getMessage());
     }
 
     @Override

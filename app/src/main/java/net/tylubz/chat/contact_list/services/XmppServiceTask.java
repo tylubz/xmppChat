@@ -18,6 +18,7 @@ import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smack.roster.RosterEntry;
 import org.jivesoftware.smack.roster.RosterListener;
+import org.jivesoftware.smack.roster.rosterstore.RosterStore;
 import org.jivesoftware.smack.sasl.core.SCRAMSHA1Mechanism;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
@@ -26,6 +27,8 @@ import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
 import org.jivesoftware.smackx.iqregister.AccountManager;
 import org.jivesoftware.smackx.muc.packet.MUCUser;
 import org.jxmpp.jid.BareJid;
+import org.jxmpp.jid.DomainBareJid;
+import org.jxmpp.jid.DomainFullJid;
 import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.EntityFullJid;
 import org.jxmpp.jid.Jid;
@@ -53,7 +56,8 @@ public class XmppServiceTask extends AsyncTask<Void, Void, Void> {
 
     private InvitationListener invitationListener;
 
-    public XmppServiceTask() {}
+    public XmppServiceTask() {
+    }
 
     public XmppServiceTask(MessageListener messageListener) {
         this.messageListener = messageListener;
@@ -90,10 +94,10 @@ public class XmppServiceTask extends AsyncTask<Void, Void, Void> {
     /**
      * Creates a connection to a server
      *
-     * @throws XMPPException if problem occurs with processing connection
-     * @throws IOException if problem occurs with processing domain name
+     * @throws XMPPException        if problem occurs with processing connection
+     * @throws IOException          if problem occurs with processing domain name
      * @throws InterruptedException if problem occurs with processing connection
-     * @throws SmackException if problem occurs with processing connection
+     * @throws SmackException       if problem occurs with processing connection
      */
     public void establishConnection() throws XMPPException, IOException, InterruptedException, SmackException {
         final String hostName = "jabber.ru";
@@ -135,14 +139,13 @@ public class XmppServiceTask extends AsyncTask<Void, Void, Void> {
     /**
      * Sends a message to specified user
      *
-     * @param jid jid of the user
+     * @param jid     jid of the user
      * @param message message
-     *
-     * @throws XmppStringprepException if error occurs when performing a particular Stringprep
-     * profile on a String
+     * @throws XmppStringprepException              if error occurs when performing a particular Stringprep
+     *                                              profile on a String
      * @throws SmackException.NotConnectedException if cannot establish connection
-     * to a specified user
-     * @throws InterruptedException if something goes wrong
+     *                                              to a specified user
+     * @throws InterruptedException                 if something goes wrong
      */
     public void sendMessage(String jid, String message) throws XmppStringprepException, SmackException.NotConnectedException, InterruptedException {
         EntityBareJid bareJid = JidCreate.entityBareFrom(jid);
@@ -152,7 +155,7 @@ public class XmppServiceTask extends AsyncTask<Void, Void, Void> {
     }
 
     //    TODO remove after testing
-    public void sendMessage(String message)  {
+    public void sendMessage(String message) {
         final String jid = "golub578@jabber.ru";
         try {
             EntityBareJid bareJid = JidCreate.entityBareFrom(jid);
@@ -167,32 +170,6 @@ public class XmppServiceTask extends AsyncTask<Void, Void, Void> {
             e.printStackTrace();
         }
     }
-
-    public void sendFile(File file) {
-        if (!file.exists()) {
-            Log.e("EROR", "file doesn't exist");
-        }
-        final String jid = "golub578@jabber.ru";
-        EntityFullJid entityFullJid = null;
-        try {
-            BareJid bareJid = JidCreate.bareFrom(jid);
-            entityFullJid = JidCreate.fullFrom(bareJid.asEntityBareJidIfPossible(), Resourcepart.EMPTY);
-        } catch (XmppStringprepException e) {
-            e.printStackTrace();
-        }
-
-        // Create the file transfer manager
-        FileTransferManager manager = FileTransferManager.getInstanceFor(connection);
-        // Create the outgoing file transfer
-        OutgoingFileTransfer transfer = manager.createOutgoingFileTransfer(entityFullJid);
-        // Send the file
-        try {
-            transfer.sendFile(file, "You won't believe this!");
-        } catch (SmackException e) {
-            e.printStackTrace();
-        }
-    }
-
 
     public List<JidContact> getContactList() {
         Roster roster = Roster.getInstanceFor(connection);
@@ -212,7 +189,7 @@ public class XmppServiceTask extends AsyncTask<Void, Void, Void> {
 
     private List<JidContact> toContactList(Collection<RosterEntry> entries, Roster roster) {
         List<JidContact> contactList = new ArrayList<>();
-        for (RosterEntry entry: entries) {
+        for (RosterEntry entry : entries) {
             Presence presence = roster.getPresence(entry.getJid());
             String userName = entry.getJid().getLocalpartOrNull() + "@" + entry.getJid().getDomain();
             contactList.add(new JidContact(userName, presence.getMode().toString()));
@@ -230,24 +207,33 @@ public class XmppServiceTask extends AsyncTask<Void, Void, Void> {
         roster.addRosterListener(new RosterListener() {
             @Override
             public void entriesAdded(Collection<Jid> addresses) {
-                for(Jid jid: addresses) {
-                    invitationListener.invite(jid.getLocalpartOrNull().toString());
-                }
             }
 
             @Override
             public void entriesUpdated(Collection<Jid> addresses) {
-                //skip
             }
 
             @Override
             public void entriesDeleted(Collection<Jid> addresses) {
-                //skip
             }
 
             @Override
             public void presenceChanged(Presence presence) {
-                //skip
+                presence.setMode(Presence.Mode.available);
+                presence.setType(Presence.Type.available);
+                try {
+                    BareJid jid = presence.getFrom().asBareJid();
+                    presence.setTo(presence.getFrom());
+                    connection.sendPacket(presence);
+                    String userName = jid.getLocalpartOrNull().toString()
+                            .concat("@")
+                            .concat(jid.getDomain().toString());
+                    invitationListener.invite(userName);
+                } catch (SmackException.NotConnectedException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
@@ -260,7 +246,9 @@ public class XmppServiceTask extends AsyncTask<Void, Void, Void> {
         this.connection = connection;
     }
 
-    public void closeConnection() {connection.disconnect();}
+    public void closeConnection() {
+        connection.disconnect();
+    }
 
     public void setInvitationListener(InvitationListener invitationListener) {
         this.invitationListener = invitationListener;

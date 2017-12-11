@@ -24,8 +24,8 @@ public class ContactListContract {
     }
 
     interface Presenter extends BasePresenter {
+        void addUser(String userName);
         void sendMessage(Message message);
-        void sendFile(File file);
         List<JidContact> getContactList();
         void deleteUser(List<String> userList);
     }

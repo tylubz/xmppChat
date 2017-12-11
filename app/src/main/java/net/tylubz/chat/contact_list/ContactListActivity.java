@@ -3,6 +3,7 @@ package net.tylubz.chat.contact_list;
 import android.content.Intent;
 import android.os.StrictMode;
 import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,6 +17,7 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import net.tylubz.chat.R;
+import net.tylubz.chat.contact_list.fragments.AddUserDialogFragment;
 import net.tylubz.chat.contact_list.model.Message;
 import net.tylubz.chat.singledialog.SingleDialogActivity;
 import net.tylubz.chat.multidialog.MultiDialogActivity;
@@ -26,7 +28,7 @@ import java.util.List;
 
 import static android.os.Build.VERSION.SDK_INT;
 
-public class ContactListActivity extends AppCompatActivity implements ContactListContract.View {
+public class ContactListActivity extends AppCompatActivity implements ContactListContract.View, AddUserDialogFragment.OnCompleteListener {
 
     private ContactListContract.Presenter contactListPresenter;
 
@@ -100,6 +102,13 @@ public class ContactListActivity extends AppCompatActivity implements ContactLis
                 contactList.setOnItemClickListener(null);
                 return true;
             case R.id.add_user:
+                AddUserDialogFragment dialogFragment = new AddUserDialogFragment();
+                // Supply num input as an argument.
+//                Bundle args = new Bundle();
+//                args.p
+//                args.putInt("num", num);
+//                f.setArguments(args);
+                dialogFragment.show(getSupportFragmentManager(), "missiles");
                 return true;
             case R.id.delete_user:
                 createChatButton.setVisibility(View.VISIBLE);
@@ -184,5 +193,11 @@ public class ContactListActivity extends AppCompatActivity implements ContactLis
     @Override
     public void setPresenter(@NonNull ContactListContract.Presenter presenter) {
         contactListPresenter = presenter;
+    }
+
+    @Override
+    public void onComplete(String result) {
+        Log.i("mytag", "On complete method has been called. Result = " + result);
+        contactListPresenter.addUser(result);
     }
 }
