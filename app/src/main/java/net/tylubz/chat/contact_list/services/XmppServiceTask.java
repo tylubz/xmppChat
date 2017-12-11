@@ -17,14 +17,18 @@ import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smack.roster.RosterEntry;
+import org.jivesoftware.smack.roster.RosterListener;
 import org.jivesoftware.smack.sasl.core.SCRAMSHA1Mechanism;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
 import org.jivesoftware.smackx.filetransfer.FileTransferManager;
 import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
+import org.jivesoftware.smackx.iqregister.AccountManager;
+import org.jivesoftware.smackx.muc.packet.MUCUser;
 import org.jxmpp.jid.BareJid;
 import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.EntityFullJid;
+import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.jid.parts.Resourcepart;
 import org.jxmpp.stringprep.XmppStringprepException;
@@ -46,6 +50,8 @@ public class XmppServiceTask extends AsyncTask<Void, Void, Void> {
     private AbstractXMPPConnection connection;
 
     private MessageListener messageListener;
+
+    private InvitationListener invitationListener;
 
     public XmppServiceTask() {}
 
@@ -115,7 +121,6 @@ public class XmppServiceTask extends AsyncTask<Void, Void, Void> {
 
         connection = new XMPPTCPConnection(config);
         connection.connect().login();
-
 
         ChatManager.getInstanceFor(connection)
                 .addIncomingListener(new IncomingChatMessageListener() {
@@ -215,6 +220,38 @@ public class XmppServiceTask extends AsyncTask<Void, Void, Void> {
         return contactList;
     }
 
+    public void inviteUser(String username, String nickName) {
+        Roster roster = Roster.getInstanceFor(connection);
+        try {
+            roster.createEntry(JidCreate.bareFrom(username), nickName, null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        roster.addRosterListener(new RosterListener() {
+            @Override
+            public void entriesAdded(Collection<Jid> addresses) {
+                for(Jid jid: addresses) {
+                    invitationListener.invite(jid.getLocalpartOrNull().toString());
+                }
+            }
+
+            @Override
+            public void entriesUpdated(Collection<Jid> addresses) {
+                //skip
+            }
+
+            @Override
+            public void entriesDeleted(Collection<Jid> addresses) {
+                //skip
+            }
+
+            @Override
+            public void presenceChanged(Presence presence) {
+                //skip
+            }
+        });
+    }
+
     public AbstractXMPPConnection getConnection() {
         return connection;
     }
@@ -224,4 +261,17 @@ public class XmppServiceTask extends AsyncTask<Void, Void, Void> {
     }
 
     public void closeConnection() {connection.disconnect();}
+
+    public void setInvitationListener(InvitationListener invitationListener) {
+        this.invitationListener = invitationListener;
+    }
+
+    public void deleteUser(String userName) {
+        Roster roster = Roster.getInstanceFor(connection);
+        try {
+            roster.removeEntry(roster.getEntry(JidCreate.bareFrom(userName)));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

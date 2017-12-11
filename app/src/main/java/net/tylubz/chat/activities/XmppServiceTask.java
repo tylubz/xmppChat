@@ -1,10 +1,8 @@
 package net.tylubz.chat.activities;
 
 import android.os.AsyncTask;
-import android.util.Log;
 
 import net.tylubz.chat.configuration.Property;
-import net.tylubz.chat.singledialog.MessageListener;
 
 import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.SASLAuthentication;
@@ -14,7 +12,6 @@ import org.jivesoftware.smack.chat2.Chat;
 import org.jivesoftware.smack.chat2.ChatManager;
 import org.jivesoftware.smack.chat2.IncomingChatMessageListener;
 import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smack.sasl.core.SCRAMSHA1Mechanism;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
@@ -119,7 +116,7 @@ public class XmppServiceTask extends AsyncTask<Void, Void, Void> {
                 .addIncomingListener(new IncomingChatMessageListener() {
                     @Override
                     public void newIncomingMessage(EntityBareJid from, Message message, Chat chat) {
-                        messageListener.push(new net.tylubz.chat.singledialog.model.Message(message.getBody()));
+                        messageListener.push(new net.tylubz.chat.shared.model.Message(message.getBody()));
                     }
                 });
     }

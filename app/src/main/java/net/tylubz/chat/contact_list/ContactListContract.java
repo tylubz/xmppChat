@@ -17,14 +17,16 @@ import java.util.List;
 public class ContactListContract {
 
     interface View extends BaseView<Presenter> {
-        void onButtonClick();
+        void onCreateButtonClick();
         void onMessageReceive(Message message);
-
+        void onInvitationAccept(JidContact jidContact);
+        void onDeleteUserButtonClick();
     }
 
     interface Presenter extends BasePresenter {
         void sendMessage(Message message);
         void sendFile(File file);
         List<JidContact> getContactList();
+        void deleteUser(List<String> userList);
     }
 }

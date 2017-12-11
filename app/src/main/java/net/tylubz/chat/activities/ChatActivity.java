@@ -13,7 +13,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import net.tylubz.chat.R;
-import net.tylubz.chat.singledialog.model.Message;
+import net.tylubz.chat.shared.model.Message;
 
 import java.text.DateFormat;
 import java.util.ArrayList;

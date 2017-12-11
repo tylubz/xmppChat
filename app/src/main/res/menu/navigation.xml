@@ -2,18 +2,20 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:onClick="addParticipants"
-        android:id="@+id/navigation_home"
+        android:onClick="onMenuItemClick"
+        android:id="@+id/create_group_chat"
         android:icon="@drawable/ic_home_black_24dp"
         android:title="@string/title_group_chat" />
 
     <item
-        android:id="@+id/navigation_dashboard"
+        android:onClick="onMenuItemClick"
+        android:id="@+id/add_user"
         android:icon="@drawable/ic_dashboard_black_24dp"
         android:title="@string/title_add_user" />
 
     <item
-        android:id="@+id/navigation_notifications"
+        android:onClick="onMenuItemClick"
+        android:id="@+id/delete_user"
         android:icon="@drawable/ic_notifications_black_24dp"
         android:title="@string/title_delete_user" />
 

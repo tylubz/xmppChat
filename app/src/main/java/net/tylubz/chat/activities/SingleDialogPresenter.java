@@ -1,6 +1,7 @@
 package net.tylubz.chat.activities;
 
-import net.tylubz.chat.singledialog.model.Message;
+
+import net.tylubz.chat.shared.model.Message;
 
 /**
  * Implementation of dialog presenter interface

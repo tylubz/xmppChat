@@ -6,6 +6,16 @@ package net.tylubz.chat.shared.model;
 
 public class Message {
 
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    private String userName;
+
     private String message;
 
     public Message(String message) {

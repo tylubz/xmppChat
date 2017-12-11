@@ -36,6 +36,8 @@ public class ContactListActivity extends AppCompatActivity implements ContactLis
 
     private List<String> jidContactList = new ArrayList<>();
 
+    private ArrayAdapter<String> adapter;
+
     private ListView contactList;
     private Button createChatButton;
     private Button cancelChatButton;
@@ -60,7 +62,9 @@ public class ContactListActivity extends AppCompatActivity implements ContactLis
         contactListPresenter = new ContactListPresenter(this);
         List<JidContact> contactList = contactListPresenter.getContactList();
 
-        for(JidContact contact: contactList) {jidContactList.add(contact.getJid());}
+        for (JidContact contact : contactList) {
+            jidContactList.add(contact.getJid());
+        }
 
         // create adapter
         ArrayAdapter<String> adapter = new ArrayAdapter(this,
@@ -83,22 +87,39 @@ public class ContactListActivity extends AppCompatActivity implements ContactLis
         return true;
     }
 
-    public boolean addParticipants(MenuItem item) {
-        Log.i("info", "Item has been selected");
+    public boolean onMenuItemClick(MenuItem item) {
         ArrayAdapter<String> adapter = new ArrayAdapter(this,
                 android.R.layout.simple_list_item_multiple_choice, jidContactList);
-        createChatButton.setVisibility(View.VISIBLE);
-        cancelChatButton.setVisibility(View.VISIBLE);
-        contactList.setAdapter(adapter);
-        contactList.setOnItemClickListener(null);
-        return true;
+        switch (item.getItemId()) {
+            case R.id.create_group_chat:
+                Log.i("info", "Item has been selected");
+                createChatButton.setVisibility(View.VISIBLE);
+                createChatButton.setOnClickListener((v) -> onCreateButtonClick());
+                cancelChatButton.setVisibility(View.VISIBLE);
+                contactList.setAdapter(adapter);
+                contactList.setOnItemClickListener(null);
+                return true;
+            case R.id.add_user:
+                return true;
+            case R.id.delete_user:
+                createChatButton.setVisibility(View.VISIBLE);
+                createChatButton.setText("Delete");
+                createChatButton.setOnClickListener(v -> onDeleteUserButtonClick());
+                cancelChatButton.setVisibility(View.VISIBLE);
+                contactList.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
+                contactList.setOnItemClickListener(null);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     public void onCancelButtonClick(View view) {
         Log.i("info", "Cancel button has been pressed");
         createChatButton.setVisibility(View.INVISIBLE);
         cancelChatButton.setVisibility(View.INVISIBLE);
-        ArrayAdapter<String> adapter = new ArrayAdapter(this,
+        adapter = new ArrayAdapter(this,
                 android.R.layout.simple_list_item_1, jidContactList);
         contactList.setAdapter(adapter);
         // add listener
@@ -109,22 +130,16 @@ public class ContactListActivity extends AppCompatActivity implements ContactLis
         });
     }
 
-    public void onCreateButtonClick(View view) {
-        onButtonClick();
-    }
-
     @Override
-    public void onButtonClick() {
+    public void onCreateButtonClick() {
         Log.i("info", "Create button has been pressed");
         SparseBooleanArray sparseArray = contactList.getCheckedItemPositions();
         ArrayList<String> markedJids = new ArrayList<>();
-        for(int i=0; i < jidContactList.size();i++)
-        {
-            if(sparseArray.get(i)) {
+        for (int i = 0; i < jidContactList.size(); i++) {
+            if (sparseArray.get(i)) {
                 Log.i("info", "Item " + jidContactList.get(i) + " has been selected");
                 markedJids.add(jidContactList.get(i));
             }
-
         }
         Intent intent = new Intent(this, MultiDialogActivity.class);
         intent.putExtra(ITEM_LIST, markedJids);
@@ -133,9 +148,37 @@ public class ContactListActivity extends AppCompatActivity implements ContactLis
         onCancelButtonClick(null);
     }
 
+
+    @Override
+    public void onDeleteUserButtonClick() {
+        SparseBooleanArray sparseArray = contactList.getCheckedItemPositions();
+        ArrayList<String> deleteUserList = new ArrayList<>();
+        for (int i = 0; i < jidContactList.size(); i++) {
+            if (sparseArray.get(i)) {
+                Log.i("info", "Item " + jidContactList.get(i) + " has been selected");
+                String jidContact = jidContactList.get(i);
+                deleteUserList.add(jidContact);
+            }
+        }
+
+        for(String jidContact : deleteUserList) {
+            jidContactList.remove(jidContact);
+        }
+        contactListPresenter.deleteUser(deleteUserList);
+        onCancelButtonClick(null);
+    }
+
     @Override
     public void onMessageReceive(Message message) {
 //        TODO add notification for incoming message
+    }
+
+    @Override
+    public void onInvitationAccept(JidContact jidContact) {
+        runOnUiThread(() -> {
+            jidContactList.add(jidContact.getJid());
+            adapter.notifyDataSetChanged();
+        });
     }
 
     @Override

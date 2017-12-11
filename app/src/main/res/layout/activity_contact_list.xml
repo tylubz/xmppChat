@@ -20,7 +20,6 @@
 
     <Button
         android:id="@+id/createChatButton"
-        android:onClick="onCreateButtonClick"
         android:layout_width="123dp"
         android:layout_height="wrap_content"
         android:text="Create"
