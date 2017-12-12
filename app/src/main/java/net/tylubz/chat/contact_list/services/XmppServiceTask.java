@@ -119,7 +119,7 @@ public class XmppServiceTask extends AsyncTask<Void, Void, Void> {
 //                    .setSecurityMode(ConnectionConfiguration.SecurityMode.required) // Do not disable TLS except for test purposes!
                 .setDebuggerEnabled(true)
                 .build();
-
+        Roster.setDefaultSubscriptionMode(Roster.SubscriptionMode.manual);
 //        add SCRAM-SHA-1 mechanism for interaction
         SASLAuthentication.registerSASLMechanism(new SCRAMSHA1Mechanism());
 
@@ -207,10 +207,12 @@ public class XmppServiceTask extends AsyncTask<Void, Void, Void> {
         roster.addRosterListener(new RosterListener() {
             @Override
             public void entriesAdded(Collection<Jid> addresses) {
+                int a = 5;
             }
 
             @Override
             public void entriesUpdated(Collection<Jid> addresses) {
+                int a =3;
             }
 
             @Override

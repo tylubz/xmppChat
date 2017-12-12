@@ -17,9 +17,9 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import net.tylubz.chat.R;
+import net.tylubz.chat.activities.ChatActivity;
 import net.tylubz.chat.contact_list.fragments.AddUserDialogFragment;
 import net.tylubz.chat.contact_list.model.Message;
-import net.tylubz.chat.singledialog.SingleDialogActivity;
 import net.tylubz.chat.multidialog.MultiDialogActivity;
 import net.tylubz.chat.shared.model.JidContact;
 
@@ -76,7 +76,7 @@ public class ContactListActivity extends AppCompatActivity implements ContactLis
 
         // add listener
         this.contactList.setOnItemClickListener((adapterView, view, i, l) -> {
-            Intent intent = new Intent(view.getContext(), SingleDialogActivity.class);
+            Intent intent = new Intent(view.getContext(), ChatActivity.class);
             intent.putExtra(USER_NAME, jidContactList.get(i));
             startActivity(intent);
         });
@@ -96,6 +96,7 @@ public class ContactListActivity extends AppCompatActivity implements ContactLis
             case R.id.create_group_chat:
                 Log.i("info", "Item has been selected");
                 createChatButton.setVisibility(View.VISIBLE);
+                createChatButton.setText("Create");
                 createChatButton.setOnClickListener((v) -> onCreateButtonClick());
                 cancelChatButton.setVisibility(View.VISIBLE);
                 contactList.setAdapter(adapter);
@@ -103,11 +104,6 @@ public class ContactListActivity extends AppCompatActivity implements ContactLis
                 return true;
             case R.id.add_user:
                 AddUserDialogFragment dialogFragment = new AddUserDialogFragment();
-                // Supply num input as an argument.
-//                Bundle args = new Bundle();
-//                args.p
-//                args.putInt("num", num);
-//                f.setArguments(args);
                 dialogFragment.show(getSupportFragmentManager(), "missiles");
                 return true;
             case R.id.delete_user:
@@ -133,7 +129,7 @@ public class ContactListActivity extends AppCompatActivity implements ContactLis
         contactList.setAdapter(adapter);
         // add listener
         this.contactList.setOnItemClickListener((adapterView, itemView, i, l) -> {
-            Intent intent = new Intent(itemView.getContext(), SingleDialogActivity.class);
+            Intent intent = new Intent(itemView.getContext(), ChatActivity.class);
             intent.putExtra(USER_NAME, jidContactList.get(i));
             startActivity(intent);
         });

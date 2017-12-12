@@ -25,6 +25,7 @@
             android:windowSoftInputMode="adjustResize"
             android:name=".singledialog.SingleDialogActivity"></activity>
         <activity android:name=".multidialog.MultiDialogActivity"></activity>
+        <activity android:name=".activities.ChatActivity"></activity>
     </application>
 
 </manifest>
