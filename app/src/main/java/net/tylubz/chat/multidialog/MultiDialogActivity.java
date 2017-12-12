@@ -5,18 +5,26 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import net.tylubz.chat.R;
+import net.tylubz.chat.activities.ChatActivity;
+import net.tylubz.chat.activities.ChatAdapter;
+import net.tylubz.chat.activities.ChatMessage;
 import net.tylubz.chat.contact_list.ContactListActivity;
 import net.tylubz.chat.shared.model.JidContact;
 import net.tylubz.chat.shared.model.Message;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class MultiDialogActivity extends AppCompatActivity implements MultiDialogContract.View{
@@ -26,25 +34,28 @@ public class MultiDialogActivity extends AppCompatActivity implements MultiDialo
     private MultiDialogContract.Presenter dialogPresenter;
 
     //    ui components
-    private Button sendButton;
+    private ImageButton sendButton;
     private EditText editText;
-    private TextView textView;
+//    private TextView textView;
+
+    private ListView messagesContainer;
+    private ChatAdapter adapter;
+    private ArrayList<ChatMessage> chatHistory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_multi_dialog);
+        setContentView(R.layout.multichat_layout);
         editText = findViewById(R.id.editTypeText);
-        sendButton = findViewById(R.id.sendButton);
-        textView = findViewById(R.id.textView);
-        textView.setMovementMethod(new ScrollingMovementMethod());
+        sendButton = findViewById(R.id.floatingActionButton);
+        messagesContainer = (ListView) findViewById(R.id.message_list);
 
         Bundle extras = getIntent().getExtras();
+        List<JidContact> jidContactList = new ArrayList<>();
         if (extras != null) {
             List<String> list = (ArrayList<String>) extras.get(ContactListActivity.ITEM_LIST);
             for(int i=0; i<list.size(); i++) {
-                textView.append(list.get(i) + DELIMITER);
+                jidContactList.add(new JidContact(list.get(i), "unknown"));
             }
         }
 //        TODO REMOVE after moving to RXJava
@@ -54,7 +65,39 @@ public class MultiDialogActivity extends AppCompatActivity implements MultiDialo
                     .permitAll().build();
             StrictMode.setThreadPolicy(policy);
         }
+        initControls(jidContactList);
+        chatHistory = new ArrayList<>();
+        adapter = new ChatAdapter(MultiDialogActivity.this, chatHistory);
+        messagesContainer.setAdapter(adapter);
         dialogPresenter = new MultiDialogPresenter(this);
+        dialogPresenter.createGroupChat(jidContactList);
+    }
+
+    private void initControls(List<JidContact> jidContactList) {
+        sendButton.setOnClickListener(v -> {
+            String messageText = editText.getText().toString();
+            if (TextUtils.isEmpty(messageText)) {
+                return;
+            }
+            ChatMessage chatMessage = new ChatMessage();
+            chatMessage.setId(131);//dummy
+            chatMessage.setMessage(messageText);
+            chatMessage.setDate(DateFormat.getDateTimeInstance().format(new Date()));
+            chatMessage.setMe(true);
+            dialogPresenter.sendMessage(new Message(messageText));
+            editText.setText("");
+            displayMessage(chatMessage);
+        });
+    }
+
+    public void displayMessage(ChatMessage message) {
+        adapter.add(message);
+        adapter.notifyDataSetChanged();
+        scroll();
+    }
+
+    private void scroll() {
+        messagesContainer.setSelection(messagesContainer.getCount() - 1);
     }
 
     @Override
@@ -68,23 +111,25 @@ public class MultiDialogActivity extends AppCompatActivity implements MultiDialo
      * @param view current view
      */
     public void onButtonClick(View view) {
-        onButtonClick();
+//        onButtonClick();
     }
 
     @Override
     public void onButtonClick() {
-        Editable editable = editText.getText();
-//        TODO extend logic for catching errors
-        List<JidContact> jidContactList = new ArrayList<>();
-        jidContactList.add(new JidContact("golub578@jabber.ru", "unknown"));
-        jidContactList.add(new JidContact("cheburek578@jabber.ru", "unknown"));
-        dialogPresenter.createGroupChat(jidContactList);
-        dialogPresenter.sendMessage(new Message("Hello!!!"));
     }
 
     @Override
     public void onMessageReceive(Message message) {
-        textView.append(message.getMessage() + DELIMITER);
+        runOnUiThread(() -> {
+            ChatMessage chatMessage = new ChatMessage();
+            chatMessage.setId(131);//dummy
+            chatMessage.setMessage(message.getMessage());
+            chatMessage.setDate(DateFormat.getDateTimeInstance().format(new Date()));
+            chatMessage.setMe(false);
+            chatHistory.add(chatMessage);
+            adapter.notifyDataSetChanged();
+        });
+//        textView.append(message.getMessage() + DELIMITER);
     }
 
     @Override

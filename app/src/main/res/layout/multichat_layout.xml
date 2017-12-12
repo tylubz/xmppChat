@@ -1,9 +1,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 
-    android:layout_width="match_parent"
-
-    android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
 
     android:orientation="vertical">
 
@@ -22,34 +22,31 @@
         <EditText
 
             android:id="@+id/editTypeText"
-
             android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_toLeftOf="@+id/floatingActionButton"
+            android:autoText="true"
+
+            android:onClick="onButtonClick" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/floatingActionButton"
+            android:layout_width="wrap_content"
 
             android:layout_height="wrap_content"
 
             android:layout_alignParentBottom="true"
 
-            android:layout_toLeftOf="@+id/floatingActionButton"
-
-            android:autoText="true" />
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/floatingActionButton"
-        android:layout_width="wrap_content"
-
-        android:layout_height="wrap_content"
-
-        android:layout_alignParentBottom="true"
-
-        android:layout_alignParentRight="true"
-        android:layout_marginBottom="16dp"
-        android:layout_marginEnd="12dp"
-        android:layout_weight="1"
-        android:clickable="true"
-        android:onClick="onButtonClick"
-        android:tint="@android:color/holo_blue_dark"
-        app:backgroundTint="@android:color/background_light"
-        app:fabSize="mini"
-        app:srcCompat="@android:drawable/ic_menu_send" />
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="12dp"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:tint="@android:color/holo_blue_dark"
+            app:backgroundTint="@android:color/background_light"
+            app:fabSize="mini"
+            app:srcCompat="@android:drawable/ic_menu_send" />
 
         <ListView
 

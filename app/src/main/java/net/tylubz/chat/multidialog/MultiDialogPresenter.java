@@ -22,7 +22,7 @@ public class MultiDialogPresenter implements MultiDialogContract.Presenter {
 
         xmppServiceTask = new XmppServiceTask(msg -> dialogView.onMessageReceive(msg),
                 result -> dialogView.onContactListReceive(result));
-        xmppServiceTask.execute();
+        xmppServiceTask.establishConnection();
 
         this.dialogView = dialogView;
         this.dialogView.setPresenter(this);
