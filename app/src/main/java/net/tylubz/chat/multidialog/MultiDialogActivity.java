@@ -16,7 +16,6 @@ import android.widget.TextView;
 
 import net.tylubz.chat.R;
 import net.tylubz.chat.activities.ChatActivity;
-import net.tylubz.chat.activities.ChatAdapter;
 import net.tylubz.chat.activities.ChatMessage;
 import net.tylubz.chat.contact_list.ContactListActivity;
 import net.tylubz.chat.shared.model.JidContact;
@@ -81,6 +80,7 @@ public class MultiDialogActivity extends AppCompatActivity implements MultiDialo
             }
             ChatMessage chatMessage = new ChatMessage();
             chatMessage.setId(131);//dummy
+            chatMessage.setUserName("me");
             chatMessage.setMessage(messageText);
             chatMessage.setDate(DateFormat.getDateTimeInstance().format(new Date()));
             chatMessage.setMe(true);
@@ -123,6 +123,7 @@ public class MultiDialogActivity extends AppCompatActivity implements MultiDialo
         runOnUiThread(() -> {
             ChatMessage chatMessage = new ChatMessage();
             chatMessage.setId(131);//dummy
+            chatMessage.setUserName(message.getUserName());
             chatMessage.setMessage(message.getMessage());
             chatMessage.setDate(DateFormat.getDateTimeInstance().format(new Date()));
             chatMessage.setMe(false);

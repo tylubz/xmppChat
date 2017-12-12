@@ -27,8 +27,10 @@ import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.muc.MultiUserChatManager;
 import org.jxmpp.jid.BareJid;
+import org.jxmpp.jid.DomainFullJid;
 import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.EntityFullJid;
+import org.jxmpp.jid.FullJid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.jid.parts.Resourcepart;
 import org.jxmpp.stringprep.XmppStringprepException;
@@ -173,10 +175,9 @@ public class XmppServiceTask extends AsyncTask<Void, Void, Void> {
                     String string2 = currentUser.getLocalpart().toString();
                     if(!string1.contains(string2)) {
                         net.tylubz.chat.shared.model.Message userMessage = new net.tylubz.chat.shared.model.Message(message.getBody());
-                        BareJid bareJid = message.getFrom().asBareJid();
-                        userMessage.setUserName(bareJid.getLocalpartOrNull()
-                                .toString().concat("@").concat(bareJid.getDomain().toString()));
-                        messageListener.push(new net.tylubz.chat.shared.model.Message(message.getBody()));
+                        String bareJid = message.getFrom().toString().replace(jid + "/", "");
+                        userMessage.setUserName(bareJid);
+                        messageListener.push(userMessage);
                     }
                 }
             });

@@ -5,6 +5,7 @@ package net.tylubz.chat.activities;
  */
 
 public class ChatMessage {
+    private String userName;
     private long id;
     private boolean isMe;
     private String message;
@@ -43,5 +44,13 @@ public class ChatMessage {
 
     public void setDate(String dateTime) {
         this.dateTime = dateTime;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 }
